@@ -8,6 +8,11 @@ class ShaderDemo(ShowBase):
         # Call the base constructor
         ShowBase.__init__(self)
 
+        # Load sphere mesh
+        self.sphere = self.loader.load_model("meshes/Sphere")
+        self.sphere.set_pos(0, 5, 0)
+        self.sphere.reparent_to(self.render)
+
 
 # Entry Point
 # ===========

@@ -39,3 +39,14 @@ project/
         Sphere.egg
     main.py
 ```
+
+Now let's add the sphere to our scene. In the `__init__` method of your `ShaderDemo` class, add the following code:
+```python
+# Load sphere mesh
+self.sphere = self.loader.load_model("meshes/Sphere")
+self.sphere.set_pos(0, 5, 0)
+self.sphere.reparent_to(self.render)
+```
+
+If you run your code at this point, you should see a textured sphere like this:
+sphere image
