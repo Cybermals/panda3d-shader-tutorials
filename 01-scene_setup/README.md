@@ -2,7 +2,7 @@
 
 In this tutorial series, I will be teaching you how to create shaders for use with Panda3D. This tutorial assumes that you already understand the basics of using Panda3D. If you have not already, I highly recommend that you complete the following tutorials before proceeding:
 * https://docs.panda3d.org/1.10/python/introduction/tutorial/index
-* https://arsthaumaturgis.github.io/Panda3DTutorial.io/  
+* https://arsthaumaturgis.github.io/Panda3DTutorial.io/
 
 Throughout this tutorial series, we will be using a simple scene to practice applying different shaders. So the first thing we are going to do is setup a simple scene we can use. First we need to create a folder for our project. You can name your project folder whatever you want. Next, we need to create a Panda3D application. Let's start by creating a simple window. Create `main.py` with the following code:
 ```python
@@ -25,4 +25,4 @@ if __name__ == "__main__":
 ```
 
 If you run your code at this point, you should see a window like this:
-
+![window screenshot](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/01-window.png?raw=true)
