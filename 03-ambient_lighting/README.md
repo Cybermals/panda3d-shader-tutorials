@@ -45,4 +45,4 @@ void main() {
 If you run your code at this point, you will see that our sphere is now darker:  
 ![ambient sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/03-ambient_lighting/screenshots/01-ambient-sphere.png?raw=true)
 
-This may seem counter-productive at first. After all, why would light darken the scene? The reason why this happened is because we haven't yet implemented diffuse lighting.
+This may seem counter-productive at first. After all, why would light darken the scene? The reason why this happened is because we haven't yet implemented any other types of lighting yet.
