@@ -50,3 +50,34 @@ self.sphere.reparent_to(self.render)
 
 If you run your code at this point, you should see a textured sphere like this:
 ![sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/02-sphere.png?raw=true)
+
+At the moment our sphere is unshaded though, so let's add some lighting to our scene. At the top of `main.py`, add the following additional imports:
+```python
+from panda3d.core import (
+    AmbientLight,
+    DirectionalLight,
+    PointLight,
+    Vec3,
+    Vec4
+)
+```
+
+And inside the `__init__` method of the `ShaderDemo` class, add this code before the part where you load the sphere mesh:
+```python
+# Setup lighting
+    self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
+    self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
+    self.render.set_light(self.ambient_light)
+
+    self.sun = self.render.attach_new_node(DirectionalLight("Sun"))
+    self.sun.set_hpr(45, -45, 0)
+    self.render.set_light(self.sun)
+
+    self.green_light = self.render.attach_new_node(PointLight("GreenLight"))
+    self.green_light.node().set_color(Vec4(0, 1, 0, 1))
+    self.green_light.set_pos(0, 0, 0)
+    self.render.set_light(self.green_light)
+```
+
+If you run your code at this point, you will see the following:
+sphere image
