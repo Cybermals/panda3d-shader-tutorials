@@ -15,6 +15,9 @@ class ShaderDemo(ShowBase):
         # Call the base constructor
         ShowBase.__init__(self)
 
+        # Enable auto shaders
+        self.render.set_shader_auto()
+
         # Setup lighting
         self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
         self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
