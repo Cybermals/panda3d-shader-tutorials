@@ -49,4 +49,4 @@ self.sphere.reparent_to(self.render)
 ```
 
 If you run your code at this point, you should see a textured sphere like this:
-sphere image
+![sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/02-sphere.png?raw=true)
