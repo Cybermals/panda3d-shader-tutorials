@@ -1,7 +1,7 @@
 # Lesson 4: Diffuse Lighting
 
-When light rays strike the surface of an object, part of the light gets absorbed into the surface. We can simulate this by using an algorithm known as Blinn-Phong shading. In the following diagram, we see a light source (L) casting a ray (V) onto a surface (S). We also see a vector perpendicular to the surface (N). Ray (V) is known as the light vector and vector (N) is known as the surface normal:  
-diffuse lighting diagram
+When light rays strike the surface of an object, part of the light gets absorbed into the surface. We can simulate this by using an algorithm known as Blinn-Phong shading. In the following diagram, we see a light source (L) casting a ray (V) onto a surface (S). We also see a vector (N) perpendicular to the surface (S). Ray (V) is known as the light vector and vector (N) is known as the surface normal:  
+![diffuse lighting diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/04-diffuse_lighting/diagrams/01-diffuse_lighting.png?raw=true)
 
 In order to determine how much diffuse lighting from a given light source should affect a surface, we need to calculate the angle (T) between the surface normal (N) and the light vector (V). Let's start by calculating the surface normal in our vertex shader. First we need to add another input attribute `p3d_Normal` that will receive the per-vertex surface normal:
 ```glsl
