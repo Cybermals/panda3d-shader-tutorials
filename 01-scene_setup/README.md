@@ -88,4 +88,7 @@ Next let's enable automatic shaders. This will improve the quality of our mesh a
 self.render.set_shader_auto()
 ```
 
-The differences are subtle, but if you look closely, you will see that now the specular highlights are a bit smoother around the edges. Now that we have our simple scene setup, we are ready to start writing some custom shaders in the next lesson.
+The differences are subtle, but if you look closely, you will see that now the specular highlights are a bit smoother around the edges:  
+![auto shaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/04-auto_shader.png?raw=true)
+
+Now that we have our simple scene setup, we are ready to start writing some custom shaders in the next lesson.
