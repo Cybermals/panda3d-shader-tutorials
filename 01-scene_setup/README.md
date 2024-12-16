@@ -28,7 +28,7 @@ If you run your code at this point, you should see a window like this:
 ![window screenshot](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/01-window.png?raw=true)
 
 Next we are going to need a mesh to display. We will be using a sphere mesh to help visualize the effect different shaders have on the surface of a mesh. For convenience, I have prepared a simple sphere mesh with a color UV grid texture for you to use. Use the following link to download the mesh:  
-sphere download link  
+https://raw.githubusercontent.com/Cybermals/panda3d-shader-tutorials/refs/heads/main/meshes.zip  
 
 After you have downloaded the sphere mesh, unzip it and place it into your project folder so you end up with a folder structure like this:
 ```
