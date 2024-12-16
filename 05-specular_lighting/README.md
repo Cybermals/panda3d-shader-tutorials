@@ -1,7 +1,7 @@
 # Lesson 5: Specular Lighting
 
 When light rays strike a surface, part of the light rays get reflected off the surface. In the following diagram, a light ray (V) is reflecting off surface (S). Ray (R) is the reflected light ray, vector (C) is the camera vector, and vector (H) is the half vector. The half vector is halfway in between the angle formed by the light ray (V) and the camera vector (C). We can use the relationship between the half vector (H) and the surface normal (N) to determine how much the surface should be affected by specular lighting:  
-specular lighting
+![specular lighting](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/05-specular_lighting/diagrams/01-specular_lighting.png?raw=true)
 
 First we need to calculate the camera vector. To do this we will first need to get the camera position. The camera position can be obtained from row 3 of the view matrix, so first we will add the uniform `p3d_ViewMatrix` to our fragment shader:
 ```glsl
@@ -100,5 +100,7 @@ vec4 calcPointLighting(int lightIdx, vec3 normal, vec3 cameraPos) {
 }
 ```
 
-The procedure here is mostly the same, but we must apply attenuation to the specular color as well before adding it to the total light color. If you run your code at this point, you will see a sphere with both diffuse and specular lighting:
-full lighting
+The procedure here is mostly the same, but we must apply attenuation to the specular color as well before adding it to the total light color. If you run your code at this point, you will see a sphere with both diffuse and specular lighting:  
+![full lighting](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/05-specular_lighting/screenshots/01-full_lighting.png?raw=true)  
+
+At this point, we have successuflly implemented all types of lighting on our sphere. Now we just need to add its texture.
