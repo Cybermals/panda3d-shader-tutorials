@@ -31,3 +31,81 @@ The new line multiplies the per-vertex normal through the normal matrix and assi
 ```glsl
 in vec3 normal;
 ```
+
+However, when passing the normal from our vertex shader to our fragment shader, the interpolation process which occurs between the two shader stages my cause the length of the normal to no longer equal 1. This will throw off our lighting calculations, so we need to normalize the normal by adding the following lines to the beginning of our lighting function:
+```glsl
+// Normalize normal
+vec3 norm = normalize(normal);
+```
+
+Next we need to calculate our light vector (V). The formula used to calculate this vector depends on the type of light source though. A directional light has a direction, but no position. In contrast, a point light has a position, but no direction. Furthermore, a spot light has a position and a direction. Therefore, we must determine which type of light source we are working with and use the correct formula. First we need to add a new uniform `p3d_LightSource` to our fragment shader:
+```glsl
+uniform struct p3d_LightSourceParameters {
+    // Primary light color.
+    vec4 color;
+
+    // Light color broken up into components, for compatibility with legacy
+    // shaders. These are now deprecated.
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+
+    // View-space position. If w=0, this is a directional light, with the xyz
+    // being -direction.
+    vec4 position;
+
+    // Spotlight-only settings
+    vec3 spotDirection;
+    float spotExponent;
+    float spotCutoff;
+    float spotCosCutoff;
+
+    // Individual attenuation constants
+    float constantAttenuation;
+    float linearAttenuation;
+    float quadraticAttenuation;
+
+    // constant, linear, quadratic attenuation in one vector
+    vec3 attenuation;
+
+    // Shadow map for this light source
+    sampler2DShadow shadowMap;
+
+    // Transforms view-space coordinates to shadow map coordinates
+    mat4 shadowViewMatrix;
+} p3d_LightSource[2];
+```
+
+The number in square brackets should be equal to the total number of directional, point, and spot lights in the scene. If the `w` component of a light source's `position` member is equal to 0, then it is a directional light. Otherwise, it is a point or spot light. For now, we will only be covering directional and point lights. To simplify things, let's define separate functions for handling directional and point lights. We will start by defining a function called `calcDirectionalLighting`:
+```glsl
+vec4 calcDirectionalLighting(int lightIdx, vec3 normal) {
+    // Calculate light vector
+    vec3 lightVector = normalize(p3d_LightSource[lightIdx].position.xyz);
+
+    // Calculate diffuse lighting
+    float nxDir = max(0, dot(normal, lightVector));
+    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir;
+
+    // Calculate total lighting
+    return (p3d_LightModel.ambient * p3d_Material.ambient + 
+        (diffuse * p3d_Material.diffuse));
+}
+```
+
+For the given light and normal, this function will first normalize the light vector passed in the `position` member of the light. Next, it will calculate the diffuse factor by calculating the dot product of the normal and light vector. The result will be set to 0 if it is less than 0 via the `max` function. Then we will multiply the color of the given light source by the diffuse factor to get the diffuse color. Afterwards, all we have to do is add the product of the diffuse color and the `diffuse` material property to the product of the ambient light color and the `ambient` material property to get the total color for the given light. We can test our new diffuse lighting by rewriting our `applyLighting` function like this:
+```glsl
+vec4 applyLighting(vec4 color) {
+    // Normalize normal
+    vec3 norm = normalize(normal);
+
+    // Calculate lighting
+    vec4 lighting = calcDirectionalLighting(0, norm);
+
+    // Apply lighting to initial color
+    lighting.a = color.a;
+    return color * lighting;
+}
+```
+
+If you run your code at this point, you should see a blue sphere with diffuse shading:  
+diffuse sphere
