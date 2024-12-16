@@ -47,7 +47,20 @@ void main() {
 
 Yet again, we will start by defining the GLSL version we are using. Variables preceded by the `out` keyword will be assigned an output value by our shader. The `p3d_FragColor` variable will be assigned the color of the fragment being processed. The `main` function for this shader will simply assign `vec4(0, .225, .8, 1)` to `p3d_FragColor`. This will cause the entire mesh to be light blue.  
 
-Now that we have created our shader stages, we need to load our shader and use it. Open `main.py` and add the following code above where you load the sphere mesh in the `__init__` method of your `ShaderDemo` class:
+Now that we have created our shader stages, we need to load our shader and use it. Open `main.py` and modify your imports like this:
+```python
+from direct.showbase.ShowBase import ShowBase
+from panda3d.core import (
+    AmbientLight,
+    DirectionalLight,
+    PointLight,
+    Shader,
+    Vec3,
+    Vec4
+)
+```
+
+Add the following code above where you load the sphere mesh in the `__init__` method of your `ShaderDemo` class:
 ```python
 # Load custom shaders
 self.sphere_shader = Shader.load(
