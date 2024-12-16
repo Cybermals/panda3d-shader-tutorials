@@ -1,5 +1,6 @@
 #version 140
 
+in vec3 fragPos;
 in vec3 normal;
 
 uniform struct p3d_LightModelParameters {
@@ -69,12 +70,44 @@ vec4 calcDirectionalLighting(int lightIdx, vec3 normal) {
 }
 
 
+vec4 calcPointLighting(int lightIdx, vec3 normal) {
+    // Calculate light vector
+    vec3 lightVector = p3d_LightSource[lightIdx].position.xyz - fragPos;
+
+    // Calculate attenuation
+    float dist = length(lightVector);
+    float attenuation = 1 / (p3d_LightSource[lightIdx].constantAttenuation + 
+        p3d_LightSource[lightIdx].linearAttenuation * dist + 
+        p3d_LightSource[lightIdx].quadraticAttenuation * dist * dist);
+
+    // Normalize light vector
+    lightVector = normalize(lightVector);
+
+    // Calculate diffuse lighting
+    float nxDir = max(0, dot(normal, lightVector));
+    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir * attenuation;
+
+    // Calculate total lighting
+    return (p3d_LightModel.ambient * p3d_Material.ambient + 
+        (diffuse * p3d_Material.diffuse));
+}
+
+
 vec4 applyLighting(vec4 color) {
     // Normalize normal
     vec3 norm = normalize(normal);
 
     // Calculate lighting
-    vec4 lighting = calcDirectionalLighting(0, norm);
+    vec4 lighting = vec4(0);
+
+    for(int i = 0; i < p3d_LightSource.length(); i++) {
+        // Calculate directional or point lighting
+        if(p3d_LightSource[i].position.w == 0) {
+            lighting += calcDirectionalLighting(i, norm);
+        } else {
+            lighting += calcPointLighting(i, norm);
+        }
+    }
 
     // Apply lighting to initial color
     lighting.a = color.a;
