@@ -184,5 +184,5 @@ vec4 applyLighting(vec4 color) {
 }
 ```
 
-The idea here is that we calculate the sum of the total light from each light source and then multiply the initial color by that value to obtain the final color. If you run your code at this point, you will notice that the sphere is now brighter and has a slight green tint on part of it:   
-all lights
+The idea here is that we calculate the sum of the total light from each light source and then multiply the initial color by that value to obtain the final color. If you run your code at this point, you will notice that the sphere is now brighter and has a slight green tint on part of it:  
+![all lights](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/04-diffuse_lighting/screenshots/02-multiple_lights.png?raw=true)
