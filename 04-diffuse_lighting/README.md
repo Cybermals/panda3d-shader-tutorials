@@ -108,4 +108,4 @@ vec4 applyLighting(vec4 color) {
 ```
 
 If you run your code at this point, you should see a blue sphere with diffuse shading:  
-diffuse sphere
+![diffuse sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/04-diffuse_lighting/screenshots/01-diffuse_sphere.png?raw=true)
