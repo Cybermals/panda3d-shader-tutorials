@@ -43,7 +43,16 @@ self.terrain.reparent_to(self.render)
 If we run your code at this point, you will see a solid white mass:  
 ![shadeless terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/01-shadeless_terrain.png?raw=true)
 
-Let's improve the appearance of our terrain by enabling auto shaders and setting up some basic lighting. Add the following lines about where you load the terrain mesh:
+Let's improve the appearance of our terrain by enabling auto shaders and setting up some basic lighting. Add the following to your imports:
+```python
+from panda3d.core import (
+    AmbientLight,
+    DirectionalLight,
+    Vec4
+)
+```
+
+Then add the following lines about where you load the terrain mesh:
 ```python
 # Enable auto shaders
 self.render.set_shader_auto()
