@@ -42,3 +42,21 @@ self.terrain.reparent_to(self.render)
 
 If we run your code at this point, you will see a solid white mass:  
 ![shadeless terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/01-shadeless_terrain.png?raw=true)
+
+Let's improve the appearance of our terrain by enabling auto shaders and setting up some basic lighting. Add the following lines about where you load the terrain mesh:
+```python
+# Enable auto shaders
+self.render.set_shader_auto()
+
+# Setup lighting
+self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
+self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
+self.render.set_light(self.ambient_light)
+
+self.sun = self.render.attach_new_node(DirectionalLight("Sun"))
+self.sun.set_hpr(45, -45, 0)
+self.render.set_light(self.sun)
+```
+
+Now if you run your code, you should be able to see the terrain contour much better:
+shaded terrain
