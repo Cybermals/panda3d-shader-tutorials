@@ -325,5 +325,5 @@ Then add this code below where you set the shader for the terrain:
 self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
 ```
 
-If you run your code at this point, you will see that the resolution of the texture on the terrain has improved:
-texture scaling
+If you run your code at this point, you will see that the resolution of the texture on the terrain has improved:  
+![texture scaling](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/02-texture_scaling.png?raw=true)
