@@ -62,6 +62,7 @@ uniform struct p3d_FogParameters {
     float scale; // 1.0 / (end - start)
 } p3d_Fog;
 uniform sampler2D p3d_Texture0;
+uniform vec2 texScale0;
 
 out vec4 p3d_FragColor;
 
@@ -166,7 +167,7 @@ vec4 applyFog(vec4 color) {
 
 void main() {
     // Calculate base color
-    vec4 baseColor = texture(p3d_Texture0, uv);
+    vec4 baseColor = texture(p3d_Texture0, uv / texScale0);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));

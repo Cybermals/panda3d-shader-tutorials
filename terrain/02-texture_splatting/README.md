@@ -295,3 +295,35 @@ self.terrain.set_texture(self.grass_tex)
 
 If you run your code at this point, you will see a texture on the terrain like this:  
 ![basic texture](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/01-basic_texture.png?raw=true)
+
+However, the resolution of the texture is low due to the way it is being stretched to fit the terrain. Let's fix this by scaling the texture in our shader. And let's also make it so we can set the scale via a shader input. First, we need to add a new uniform `texScale0` to our fragment shader:
+```glsl
+uniform vec2 texScale0;
+```
+
+And we also need to divide our UV coordinate by the scale before sampling the texture:
+```glsl
+// Calculate base color
+vec4 baseColor = texture(p3d_Texture0, uv / texScale0);
+```
+
+We also need to pass the scale into our shader. First modify your imports like this:
+```python
+from direct.showbase.ShowBase import ShowBase
+from panda3d.core import (
+    AmbientLight,
+    DirectionalLight,
+    SamplerState,
+    Shader,
+    Vec2,
+    Vec4
+)
+```
+
+Then add this code below where you set the shader for the terrain:
+```python
+self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
+```
+
+If you run your code at this point, you will see that the resolution of the texture on the terrain has improved:
+texture scaling

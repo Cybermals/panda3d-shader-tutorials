@@ -4,6 +4,7 @@ from panda3d.core import (
     DirectionalLight,
     SamplerState,
     Shader,
+    Vec2,
     Vec4
 )
 
@@ -45,6 +46,7 @@ class TerrainDemo(ShowBase):
         self.terrain.set_pos(0, 261, 0)
 
         self.terrain.set_shader(self.terrain_shader)
+        self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
 
         self.terrain.set_texture(self.grass_tex)
 
