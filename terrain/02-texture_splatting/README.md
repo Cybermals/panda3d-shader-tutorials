@@ -293,5 +293,5 @@ This will load the grass texture and turn on the linear mipmap filter for this t
 self.terrain.set_texture(self.grass_tex)
 ```
 
-If you run your code at this point, you will see a texture on the terrain like this:
-basic texture
+If you run your code at this point, you will see a texture on the terrain like this:  
+![basic texture](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/01-basic_texture.png?raw=true)
