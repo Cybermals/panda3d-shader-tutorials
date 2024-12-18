@@ -60,3 +60,5 @@ self.render.set_light(self.sun)
 
 Now if you run your code, you should be able to see the terrain contour much better:  
 ![shaded terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/02-shaded_terrain.png?raw=true)
+
+However, our terrain still has no texture at this point. We could simply apply a single texture to the terrain surface, but doing so would limit what we could do with our terrain. However, there is a technique we can use to use multiple textures on the same terrain to achieve a high quality for our terrain appearance.
