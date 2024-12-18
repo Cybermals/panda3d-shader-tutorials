@@ -1,6 +1,6 @@
 # Lesson 1: Scene Setup
 
-In this tutorial series, I will be teaching how to write shaders that are useful for rendering terrain, including water. Let's start by creating a new project folder and adding `main.py` with the following content:
+In this tutorial series, I will be teaching how to write shaders that are useful for rendering terrain, including water. This tutorial series assumes that you have completed my tutorial series on the basics of creating shaders for Panda3D. If you have not already, I recommend that you complete that tutorial series first. Let's start by creating a new project folder and adding `main.py` with the following content:
 ```python
 from direct.showbase.ShowBase import ShowBase
 
