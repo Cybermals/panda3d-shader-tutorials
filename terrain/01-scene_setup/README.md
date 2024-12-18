@@ -40,5 +40,5 @@ self.terrain.set_pos(0, 261, 0)
 self.terrain.reparent_to(self.render)
 ```
 
-If we run your code at this point, you will see a solid white mass:
-shadeless terrain
+If we run your code at this point, you will see a solid white mass:  
+![shadeless terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/01-shadeless_terrain.png?raw=true)
