@@ -58,5 +58,5 @@ self.sun.set_hpr(45, -45, 0)
 self.render.set_light(self.sun)
 ```
 
-Now if you run your code, you should be able to see the terrain contour much better:
-shaded terrain
+Now if you run your code, you should be able to see the terrain contour much better:  
+![shaded terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/02-shaded_terrain.png?raw=true)
