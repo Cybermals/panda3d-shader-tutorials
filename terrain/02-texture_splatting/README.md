@@ -327,3 +327,128 @@ self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
 
 If you run your code at this point, you will see that the resolution of the texture on the terrain has improved:  
 ![texture scaling](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/02-texture_scaling.png?raw=true)
+
+However, we are still only using one texture on our terrain. Let's try loading some more textures next:
+```python
+# Load textures
+self.grass_tex = self.loader.load_texture("images/Grass.png")
+self.grass_tex.minfilter = SamplerState.FT_linear_mipmap_linear
+self.grass_tex.magfilter = SamplerState.FT_linear_mipmap_linear
+
+self.dirt_tex = self.loader.load_texture("images/Dirt.png")
+self.dirt_tex.minfilter = SamplerState.FT_linear_mipmap_linear
+self.dirt_tex.magfilter = SamplerState.FT_linear_mipmap_linear
+
+self.rock_tex = self.loader.load_texture("images/Rock.png")
+self.rock_tex.minfilter = SamplerState.FT_linear_mipmap_linear
+self.rock_tex.magfilter = SamplerState.FT_linear_mipmap_linear
+
+self.blank_tex = self.loader.load_texture("images/Blank.png")
+self.blank_tex.minfilter = SamplerState.FT_linear_mipmap_linear
+self.blank_tex.magfilter = SamplerState.FT_linear_mipmap_linear
+```
+
+We have a total of 4 textures loaded now, but how can we use them all on our terrain? If we call `set_texture` repeatedly, we will just be changing the first texture used on the terrain. However, it is possible to assign multiple textures at once by assigning each texture to a different texture stage. First we need to modify our imports like this:
+```python
+from direct.showbase.ShowBase import ShowBase
+from panda3d.core import (
+    AmbientLight,
+    DirectionalLight,
+    SamplerState,
+    Shader,
+    TextureStage,
+    Vec2,
+    Vec4
+)
+```
+
+Now we can create a texture stage for each additional texture we want to use and assign a different texture to each:
+```python
+stage1 = TextureStage("Dirt")
+stage2 = TextureStage("Rock")
+stage3 = TextureStage("Blank")
+
+self.terrain.set_texture(self.grass_tex)
+self.terrain.set_texture(stage1, self.dirt_tex)
+self.terrain.set_texture(stage2, self.rock_tex)
+self.terrain.set_texture(stage3, self.blank_tex)
+```
+
+We will also need to add more uniforms to our fragment shader that will receive the additional textures:
+```glsl
+uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
+uniform sampler2D p3d_Texture2;
+uniform sampler2D p3d_Texture3;
+```
+
+And we need to add scale uniforms for the additional textures as well:
+```glsl
+uniform vec2 texScale0;
+uniform vec2 texScale1;
+uniform vec2 texScale2;
+uniform vec2 texScale3;
+```
+
+The new scale uniforms will need to be populated like our first one:
+```python
+self.terrain.set_shader(self.terrain_shader)
+self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
+self.terrain.set_shader_input("texScale1", Vec2(.1, .1))
+self.terrain.set_shader_input("texScale2", Vec2(.1, .1))
+self.terrain.set_shader_input("texScale3", Vec2(.1, .1))
+```
+
+However, there is still something that is missing. We have not defined a way to determine which texture should be used for each part of the terrain. To do this, we will need to use an additional texture called a color mask. Let's start by loading it:
+```python
+self.color_mask_tex = self.loader.load_texture("images/ColorMask.png")
+self.color_mask_tex.minfilter = SamplerState.FT_linear_mipmap_linear
+self.color_mask_tex.magfilter = SamplerState.FT_linear_mipmap_linear
+```
+
+We also need to add an additional texture stage for it:
+```python
+stage1 = TextureStage("Dirt")
+stage2 = TextureStage("Rock")
+stage3 = TextureStage("Blank")
+stage4 = TextureStage("ColorMask")
+
+self.terrain.set_texture(self.grass_tex)
+self.terrain.set_texture(stage1, self.dirt_tex)
+self.terrain.set_texture(stage2, self.rock_tex)
+self.terrain.set_texture(stage3, self.blank_tex)
+self.terrain.set_texture(stage4, self.color_mask_tex)
+```
+
+And in our fragment shader, we will need to add another uniform for this texture:
+```glsl
+uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
+uniform sampler2D p3d_Texture2;
+uniform sampler2D p3d_Texture3;
+uniform sampler2D p3d_Texture4;
+```
+
+Now we need to sample the first 4 textures like this:
+```glsl
+// Calculate base color
+vec4 baseColor = texture(p3d_Texture0, uv / texScale0);
+vec4 layer1 = texture(p3d_Texture1, uv / texScale1);
+vec4 layer2 = texture(p3d_Texture2, uv / texScale2);
+vec4 layer3 = texture(p3d_Texture3, uv / texScale3);
+```
+
+Once we have sampled those textures, we will sample the mask as well. However, we will not be scaling the mask:
+```glsl
+vec4 mask0 = texture(p3d_Texture4, uv);
+```
+
+And now we can use each color channel of the mask to determine how to blend the other 4 textures:
+```glsl
+baseColor = mix(baseColor, layer1, mask0.r);
+baseColor = mix(baseColor, layer2, mask0.g);
+baseColor = mix(baseColor, layer3, mask0.b);
+```
+
+The idea is that black represents the base texture. In this case our base texure is grass. Red represents the layer 1 texure which is dirt in this case. Green represents the layer 2 texture which is rock in this case. And blue represents the layer 3 texture which is blank in this case. If you run your code now, you will see that the terrain now has grass, dirt, and rock:
+texture splatting
