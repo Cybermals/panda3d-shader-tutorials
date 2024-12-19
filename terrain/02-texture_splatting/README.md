@@ -450,5 +450,7 @@ baseColor = mix(baseColor, layer2, mask0.g);
 baseColor = mix(baseColor, layer3, mask0.b);
 ```
 
-The idea is that black represents the base texture. In this case our base texure is grass. Red represents the layer 1 texure which is dirt in this case. Green represents the layer 2 texture which is rock in this case. And blue represents the layer 3 texture which is blank in this case. If you run your code now, you will see that the terrain now has grass, dirt, and rock:
-texture splatting
+The idea is that black represents the base texture. In this case our base texure is grass. Red represents the layer 1 texure which is dirt in this case. Green represents the layer 2 texture which is rock in this case. And blue represents the layer 3 texture which is blank in this case. If you run your code now, you will see that the terrain now has grass, dirt, and rock:  
+![texture splatting](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/03-texture_splatting.png?raw=true)
+
+If you need more textures, you can add 3 more textures and another mask. Each additional mask lets you use 3 more textures.
