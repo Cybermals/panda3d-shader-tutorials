@@ -72,5 +72,5 @@ And under the part where you create your texture buffers, add this code:
 base.task_mgr.add(self.update_cameras, "update_water_cameras")
 ```
 
-Now if you run your code, you should see the content of your reflection and refraction textures change as you move the camera around the scene:
-texture buffers
+Now if you run your code, you should see the content of your reflection and refraction textures change as you move the camera around the scene:  
+![texture buffers](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/01-texture_buffers.png?raw=true)
