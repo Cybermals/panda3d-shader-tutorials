@@ -5,8 +5,11 @@ from panda3d.core import (
     GeomVertexData,
     GeomVertexFormat,
     GeomVertexWriter,
+    GraphicsOutput,
     Material,
+    SamplerState,
     Shader,
+    Texture,
     Vec3,
     Vec4
 )
@@ -31,6 +34,40 @@ class WaterPlane(object):
             self.water_mat.set_diffuse(Vec4(0, .225, .8, 1))
             self.water_mat.set_specular(Vec3(.5, .5, .5))
             self.water_mat.set_shininess(32)
+
+        # Get the default camera lens
+        cam_lens = base.cam.node().get_lens()
+
+        # Create refraction buffer. Using (0, 0) for the size indicates that the size of the buffer should
+        # be synced with the main window.
+        self.refract_buf = base.win.make_texture_buffer("WaterRefractionBuffer", 0, 0)
+        self.refract_buf.set_sort(-100)
+        self.refract_buf.add_render_texture(
+            Texture("RefractionDepth"),
+            GraphicsOutput.RTM_bind_or_copy,
+            GraphicsOutput.RTP_depth
+        )
+        self.refract_tex = self.refract_buf.get_texture()
+        self.refract_depth_tex = self.refract_buf.get_texture(1)
+        self.refract_tex.wrap_u = SamplerState.WM_repeat
+        self.refract_tex.wrap_v = SamplerState.WM_repeat
+        
+        self.refract_cam = base.make_camera(self.refract_buf, lens=cam_lens)
+        self.refract_cam.reparent_to(base.render)
+
+        # Create reflection buffer. Using (0, 0) for the size indicates that the size of the buffer should
+        # be synced with the main window.
+        self.reflect_buf = base.win.make_texture_buffer("WaterReflectionBuffer", 0, 0)
+        self.reflect_buf.set_sort(-100)
+        self.reflect_tex = self.reflect_buf.get_texture()
+        self.reflect_tex.wrap_u = SamplerState.WM_repeat
+        self.reflect_tex.wrap_v = SamplerState.WM_repeat
+        
+        self.reflect_cam = base.make_camera(self.reflect_buf, lens=cam_lens)
+        self.reflect_cam.reparent_to(base.render)
+
+        # Register water camera update task
+        base.task_mgr.add(self.update_cameras, "update_water_cameras")
 
         # Initialize plane mesh if necessary
         if self.plane_mesh is None:
@@ -70,3 +107,15 @@ class WaterPlane(object):
         self.plane.set_shader(self.water_shader)
 
         self.plane.set_material(self.water_mat)
+
+    def update_cameras(self, task):
+        # Update refraction and reflection cameras
+        self.refract_cam.set_transform(base.camera.get_transform())
+
+        self.reflect_cam.set_transform(base.camera.get_transform())
+        cam_height = base.camera.get_z()
+        dist = cam_height - self.plane.get_z()
+        self.reflect_cam.set_z(self.reflect_cam.get_z() - dist * 2)
+        self.reflect_cam.set_p(-self.reflect_cam.get_p())
+        self.reflect_cam.set_r(self.reflect_cam.get_r() + 180)
+        return task.cont

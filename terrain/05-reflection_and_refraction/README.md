@@ -8,3 +8,69 @@ And objects above the water will get reflected on the surface of the water:
 
 We can create a refraction texture by rendering the scene from the viewpoint of the main camera, however we must use a slightly different approach for rendering the reflection texture. In order to capture the objects above the water, we will need to render the scene from a camera below the water and looking up as depicted in this diagram:  
 ![reflection camera](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/03-reflection_camera.png?raw=true)
+
+The first thing we will need to do, is to setup 2 texture buffers we can use to render our reflection and refraction textures. Add the following code below where you create your water material:
+```python
+# Get the default camera lens
+cam_lens = base.cam.node().get_lens()
+
+# Create refraction buffer. Using (0, 0) for the size indicates that the size of the buffer should
+# be synced with the main window.
+self.refract_buf = base.win.make_texture_buffer("WaterRefractionBuffer", 0, 0)
+self.refract_buf.set_sort(-100)
+self.refract_buf.add_render_texture(
+    Texture("RefractionDepth"),
+    GraphicsOutput.RTM_bind_or_copy,
+    GraphicsOutput.RTP_depth
+)
+self.refract_tex = self.refract_buf.get_texture()
+self.refract_depth_tex = self.refract_buf.get_texture(1)
+self.refract_tex.wrap_u = SamplerState.WM_repeat
+self.refract_tex.wrap_v = SamplerState.WM_repeat
+
+self.refract_cam = base.make_camera(self.refract_buf, lens=cam_lens)
+self.refract_cam.reparent_to(base.render)
+
+# Create reflection buffer. Using (0, 0) for the size indicates that the size of the buffer should
+# be synced with the main window.
+self.reflect_buf = base.win.make_texture_buffer("WaterReflectionBuffer", 0, 0)
+self.reflect_buf.set_sort(-100)
+self.reflect_tex = self.reflect_buf.get_texture()
+self.reflect_tex.wrap_u = SamplerState.WM_repeat
+self.reflect_tex.wrap_v = SamplerState.WM_repeat
+
+self.reflect_cam = base.make_camera(self.reflect_buf, lens=cam_lens)
+self.reflect_cam.reparent_to(base.render)
+```
+
+We use the `make_texture_buffer` method of the main window to create a texture buffer. Passing 0 for the width and height causes the size to be the same as the main window. Setting the sort order to a negative value causes the texture buffers to be rendered to before the main window each frame. We need to add a depth texture to our refraction buffer so we can use the depth values in later calculations. We also need to get each of the textures we are rendering to and set them to repeat. Then we need to create a camera that will be used to render each buffer. We need to use the same lens as the main camera for both of our new cameras. and we also have to reparent our new cameras to the root of the scene graph. Let's also go to `main.py` and add the following code to the bottom of our constructor to enable the buffer viewer:
+```python
+# Configure buffer viewer
+self.bufferViewer.setPosition("ulcorner")
+self.bufferViewer.setCardSize(.5, 0)
+self.accept("v", self.bufferViewer.toggleEnable)
+```
+
+If you run your code at this point, you can now press V to show the contents of each texture buffer as a card at the top of the window. However, as it is rn our reflection and refraction cameras are not being moved when the main camera moves. Let's fix that next. Inside your water plane class, add the following method:
+```python
+def update_cameras(self, task):
+    # Update refraction and reflection cameras
+    self.refract_cam.set_transform(base.camera.get_transform())
+
+    self.reflect_cam.set_transform(base.camera.get_transform())
+    cam_height = base.camera.get_z()
+    dist = cam_height - self.plane.get_z()
+    self.reflect_cam.set_z(self.reflect_cam.get_z() - dist * 2)
+    self.reflect_cam.set_p(-self.reflect_cam.get_p())
+    self.reflect_cam.set_r(self.reflect_cam.get_r() + 180)
+    return task.cont
+```
+
+And under the part where you create your texture buffers, add this code:
+```python
+# Register water camera update task
+base.task_mgr.add(self.update_cameras, "update_water_cameras")
+```
+
+Now if you run your code, you should see the content of your reflection and refraction textures change as you move the camera around the scene:
+texture buffers

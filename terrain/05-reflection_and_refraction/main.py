@@ -90,6 +90,11 @@ class TerrainDemo(ShowBase):
             scale=Vec3(256, 256, 1)
         )
 
+        # Configure buffer viewer
+        self.bufferViewer.setPosition("ulcorner")
+        self.bufferViewer.setCardSize(.5, 0)
+        self.accept("v", self.bufferViewer.toggleEnable)
+
 
 # Entry Point
 # ===========
