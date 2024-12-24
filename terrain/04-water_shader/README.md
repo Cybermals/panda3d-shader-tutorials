@@ -242,5 +242,5 @@ self.plane.set_shader(self.water_shader)
 self.plane.set_material(self.water_mat)
 ```
 
-If you run your code at this point, the water plane should now be a dark blue color:
-water shader
+If you run your code at this point, the water plane should now be a dark blue color:  
+https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/04-water_shader/screenshots/01-water_shader.png?raw=true
