@@ -97,5 +97,5 @@ self.water = WaterPlane(
 )
 ```
 
-If you run your code at this point, you should see a grey plane across the depression in the center of the terrain:
-water plane image
+If you run your code at this point, you should see a grey plane across the depression in the center of the terrain:  
+![water plane](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/03-water_plane/screenshots/01-water_plane.png?raw=true)
