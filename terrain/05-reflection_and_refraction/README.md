@@ -146,5 +146,5 @@ And add the following code to your `main` function:
 gl_ClipDistance[0] = dot(vec4(fragPos, 1), p3d_ClipPlane[0]);
 ```
 
-You will also need to make the same changes to your terrain vertex shader. Once you have made these changes, your reflection and refraction textures should only be rendering part of the scene:
-clip planes
+You will also need to make the same changes to your terrain vertex shader. Once you have made these changes, your reflection and refraction textures should only be rendering part of the scene:  
+![clipping planes](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/02-clip_planes.png?raw=true)
