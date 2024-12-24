@@ -246,7 +246,7 @@ self.terrain.set_shader(self.terrain_shader)
 ```
 
 If you run your code at this point, you won't see any differences because we haven't yet loaded any textures for our terrain. For this tutorial series, we will be using some simple terrain textures I made. Download the zip file from the following URL:
-texture zip file
+https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/terrain/images.zip
 
 Now extract the zip file so your folder structure looks like this:
 ```
@@ -259,6 +259,8 @@ project/
         Heightmap.png
         Heightmap2.png
         Rock.png
+        WaterDUDV.png
+        WaterNormal.png
     meshes/
         Terrain.egg
         Water.egg
