@@ -20,14 +20,13 @@ if __name__ == "__main__":
 ```
 
 Now we need to load some terrain to test our shaders on. For this tutorial series we will be using a simple terrain mesh. In a production grade project, you will need to decide what sort of terrain system to use based on the properties of the terrain. Download the terrain meshes from the following URL:
-terrain meshes
+https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/terrain/meshes.zip
 
 Then unpack the zip file so your project structure looks like:
 ```
 project/
     meshes/
         Terrain.egg
-        Water.egg
     main.py
 ```
 
