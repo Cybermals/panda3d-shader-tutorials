@@ -1,4 +1,5 @@
 from panda3d.core import (
+    ClipPlaneAttrib,
     Geom,
     GeomNode,
     GeomTriangles,
@@ -7,6 +8,8 @@ from panda3d.core import (
     GeomVertexWriter,
     GraphicsOutput,
     Material,
+    Plane,
+    PlaneNode,
     SamplerState,
     Shader,
     Texture,
@@ -107,6 +110,22 @@ class WaterPlane(object):
         self.plane.set_shader(self.water_shader)
 
         self.plane.set_material(self.water_mat)
+
+        # Configure refraction clipping plane
+        self.refract_clip_plane = self.plane.attach_new_node(PlaneNode(
+            "WaterRefractClipPlane",
+            Plane(0, 0, -1, -.001)
+        ))
+        clip_state = ClipPlaneAttrib.make_default().add_on_plane(self.refract_clip_plane)
+        self.refract_cam.node().set_initial_state(clip_state)
+
+        # Configure reflection clipping plane
+        self.reflect_clip_plane = self.plane.attach_new_node(PlaneNode(
+            "WaterReflectClipPlane",
+            Plane(0, 0, 1, -.001)
+        ))
+        clip_state = ClipPlaneAttrib.make_default().add_on_plane(self.reflect_clip_plane)
+        self.reflect_cam.node().set_initial_state(clip_state)
 
     def update_cameras(self, task):
         # Update refraction and reflection cameras

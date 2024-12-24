@@ -7,6 +7,7 @@ in vec3 p3d_MultiTexCoord0;
 uniform mat4 p3d_ModelViewMatrix;
 uniform mat4 p3d_ModelViewProjectionMatrix;
 uniform mat3 p3d_NormalMatrix;
+uniform vec4 p3d_ClipPlane[1];
 
 out vec3 fragPos;
 out vec3 normal;
@@ -21,4 +22,7 @@ void main() {
 
     // Calculate UV
     uv = p3d_MultiTexCoord0.xy;
+
+    // Calculate clip distance
+    gl_ClipDistance[0] = dot(vec4(fragPos, 1), p3d_ClipPlane[0]);
 }

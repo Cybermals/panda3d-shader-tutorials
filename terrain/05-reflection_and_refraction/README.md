@@ -9,7 +9,26 @@ And objects above the water will get reflected on the surface of the water:
 We can create a refraction texture by rendering the scene from the viewpoint of the main camera, however we must use a slightly different approach for rendering the reflection texture. In order to capture the objects above the water, we will need to render the scene from a camera below the water and looking up as depicted in this diagram:  
 ![reflection camera](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/03-reflection_camera.png?raw=true)
 
-The first thing we will need to do, is to setup 2 texture buffers we can use to render our reflection and refraction textures. Add the following code below where you create your water material:
+The first thing we will need to do, is to setup 2 texture buffers we can use to render our reflection and refraction textures. Modify your imports like this:
+```python
+from panda3d.core import (
+    Geom,
+    GeomNode,
+    GeomTriangles,
+    GeomVertexData,
+    GeomVertexFormat,
+    GeomVertexWriter,
+    GraphicsOutput,
+    Material,
+    SamplerState,
+    Shader,
+    Texture,
+    Vec3,
+    Vec4
+)
+```
+
+And add the following code below where you create your water material:
 ```python
 # Get the default camera lens
 cam_lens = base.cam.node().get_lens()
@@ -74,3 +93,58 @@ base.task_mgr.add(self.update_cameras, "update_water_cameras")
 
 Now if you run your code, you should see the content of your reflection and refraction textures change as you move the camera around the scene:  
 ![texture buffers](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/01-texture_buffers.png?raw=true)
+
+However, our refraction texture should only contain everything below the water and our reflection texture should only contain everything above the water. To enforce this, we will add custom clipping planes. Start by modifying your imports like this:
+```python
+from panda3d.core import (
+    ClipPlaneAttrib,
+    Geom,
+    GeomNode,
+    GeomTriangles,
+    GeomVertexData,
+    GeomVertexFormat,
+    GeomVertexWriter,
+    GraphicsOutput,
+    Material,
+    Plane,
+    PlaneNode,
+    SamplerState,
+    Shader,
+    Texture,
+    Vec3,
+    Vec4
+)
+```
+
+Then add the following code to the bottom of your constructor:
+```python
+# Configure refraction clipping plane
+self.refract_clip_plane = self.plane.attach_new_node(PlaneNode(
+    "WaterRefractClipPlane",
+    Plane(0, 0, -1, -.001)
+))
+clip_state = ClipPlaneAttrib.make_default().add_on_plane(self.refract_clip_plane)
+self.refract_cam.node().set_initial_state(clip_state)
+
+# Configure reflection clipping plane
+self.reflect_clip_plane = self.plane.attach_new_node(PlaneNode(
+    "WaterReflectClipPlane",
+    Plane(0, 0, 1, -.001)
+))
+clip_state = ClipPlaneAttrib.make_default().add_on_plane(self.reflect_clip_plane)
+self.reflect_cam.node().set_initial_state(clip_state)
+```
+
+Now we need to add another uniform to our vertex shader:
+```glsl
+uniform vec4 p3d_ClipPlane[1];
+```
+
+And add the following code to your `main` function:
+```glsl
+// Calculate clip distance
+gl_ClipDistance[0] = dot(vec4(fragPos, 1), p3d_ClipPlane[0]);
+```
+
+You will also need to make the same changes to your terrain vertex shader. Once you have made these changes, your reflection and refraction textures should only be rendering part of the scene:
+clip planes
