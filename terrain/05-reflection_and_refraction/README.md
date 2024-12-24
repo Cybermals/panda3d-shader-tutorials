@@ -6,5 +6,5 @@ In this lesson, I will show you how to add reflection and refraction to our wate
 And objects above the water will get reflected on the surface of the water:  
 ![reflection diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/02-reflection.png?raw=true)
 
-We can create a refraction texture by rendering the scene from the viewpoint of the main camera, however we must use a slightly different approach for rendering the reflection texture. In order to capture the objects above the water, we will need to render the scene from a camera below the water and looking up as depicted in this diagram:
-reflection camera
+We can create a refraction texture by rendering the scene from the viewpoint of the main camera, however we must use a slightly different approach for rendering the reflection texture. In order to capture the objects above the water, we will need to render the scene from a camera below the water and looking up as depicted in this diagram:  
+![reflection camera](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/03-reflection_camera.png?raw=true)
