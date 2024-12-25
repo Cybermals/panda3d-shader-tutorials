@@ -231,5 +231,5 @@ if self.water_mat is None:
     self.water_mat.set_shininess(32)
 ```
 
-If you run your code at this point, you will notice that the reflections look off like in this screenshot:
-reflection bug
+If you run your code at this point, you will notice that the reflections look off like in this screenshot:  
+![reflection bug](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/03-reflection_bug.png?raw=true)
