@@ -234,5 +234,29 @@ if self.water_mat is None:
 If you run your code at this point, you will notice that the reflections look off like in this screenshot:  
 ![reflection bug](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/03-reflection_bug.png?raw=true)
 
-This bug occurs when the width of the window is not a power of 2. The reason why it occurs is because the texture gets padding added to make its width a power of 2 which leaves a portion of the texture blank like in this diagram:
-texture padding
+This bug occurs when the width of the window is not a power of 2. The reason why it occurs is because the texture gets padding added to make its width a power of 2 which leaves a portion of the texture blank like in this diagram:  
+![texture padding](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/04-texture_padding.png?raw=true)
+
+The green area of the diagram gets rendered to, but the black area is padding that doesn't get rendered to. However, we can fix the bug by simply adjusting our calculations so we skip over the padding. First we need to add another uniform to our fragment shader:
+```glsl
+uniform vec2 winSize;
+```
+
+Then we will adjust our UV calculations like this:
+```glsl
+// Calculate refraction and reflection UV coordinates
+vec2 texSize = textureSize(p3d_Texture0, 0).xy;
+vec2 texelSize = 1 / texSize;
+vec2 ndc = gl_FragCoord.xy * texelSize;
+vec2 refractUV = vec2(ndc.x, ndc.y);
+vec2 reflectUV = vec2(-((texSize.x - winSize.x) * texelSize.x + ndc.x), ndc.y);
+```
+
+And in the `update` method of our `WaterPlane` class, we need to set the window size uniform each frame:
+```python
+# Update window size uniform
+self.plane.set_shader_input("winSize", base.win.get_size())
+```
+
+If we run the code now, it should have correct reflections on the water surface:
+reflections
