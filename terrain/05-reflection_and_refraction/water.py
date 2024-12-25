@@ -13,6 +13,7 @@ from panda3d.core import (
     SamplerState,
     Shader,
     Texture,
+    TextureStage,
     Vec3,
     Vec4
 )
@@ -33,8 +34,8 @@ class WaterPlane(object):
         # Initialize water material if necessary
         if self.water_mat is None:
             WaterPlane.water_mat = Material()
-            self.water_mat.set_ambient(Vec4(0, .225, .8, 1))
-            self.water_mat.set_diffuse(Vec4(0, .225, .8, 1))
+            self.water_mat.set_ambient(Vec4(1, 1, 1, 1))
+            self.water_mat.set_diffuse(Vec4(.8, .8, .8, 1))
             self.water_mat.set_specular(Vec3(.5, .5, .5))
             self.water_mat.set_shininess(32)
 
@@ -108,6 +109,11 @@ class WaterPlane(object):
         self.plane.set_scale(scale)
 
         self.plane.set_shader(self.water_shader)
+
+        stage1 = TextureStage("ReflectionTex")
+
+        self.plane.set_texture(self.refract_tex)
+        self.plane.set_texture(stage1, self.reflect_tex)
 
         self.plane.set_material(self.water_mat)
 

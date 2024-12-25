@@ -148,3 +148,88 @@ gl_ClipDistance[0] = dot(vec4(fragPos, 1), p3d_ClipPlane[0]);
 
 You will also need to make the same changes to your terrain vertex shader. Once you have made these changes, your reflection and refraction textures should only be rendering part of the scene:  
 ![clipping planes](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/02-clip_planes.png?raw=true)
+
+Now let's apply our reflection and refraction textures to the water plane. We need to start by modifying our imports like this:
+```python
+from panda3d.core import (
+    ClipPlaneAttrib,
+    Geom,
+    GeomNode,
+    GeomTriangles,
+    GeomVertexData,
+    GeomVertexFormat,
+    GeomVertexWriter,
+    GraphicsOutput,
+    Material,
+    Plane,
+    PlaneNode,
+    SamplerState,
+    Shader,
+    Texture,
+    TextureStage,
+    Vec3,
+    Vec4
+)
+```
+
+Then we need to setup our texture stages after where we set our shader:
+```python
+stage1 = TextureStage("ReflectionTex")
+
+self.plane.set_texture(self.refract_tex)
+self.plane.set_texture(stage1, self.reflect_tex)
+```
+
+Next, we need to add 2 new uniforms to our fragment shader:
+```glsl
+uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
+```
+
+However, we have not yet done our UV calculations. In order to properly map our reflection and refraction textures to the water plane, we will be using a technique known as projective texture mapping. Instead of using UV coordinates from our geometry data, we will instead generate them in the vertex shader. First, we need to add a new output attribute to our vertex shader:
+```glsl
+out vec2 uv;
+```
+
+And we will calculate it with the following code in our `main` function:
+```glsl
+// Calculate UV
+uv = vec2(p3d_Vertex.x / 2 + .5, p3d_Vertex.y / 2 + .5);
+```
+
+Now we can go to our fragment shader and add a new input attribute:
+```glsl
+in vec2 uv;
+```
+
+Then we can calculate the correct UV coordinates for our textures in the `main` function like this:
+```glsl
+// Calculate refraction and reflection UV coordinates
+vec2 texelSize = 1 / vec2(textureSize(p3d_Texture0, 0));
+vec2 ndc = gl_FragCoord.xy * texelSize;
+vec2 refractUV = vec2(ndc.x, ndc.y);
+vec2 reflectUV = vec2(-ndc.x, ndc.y);
+```
+
+And afterwards we can use the UV coordinates to sample our reflection and refraction textures so we can mix them like this:
+```glsl
+// Calculate base color
+vec4 refractColor = texture(p3d_Texture0, refractUV);
+vec4 reflectColor = texture(p3d_Texture1, reflectUV);
+
+vec4 baseColor = mix(refractColor, reflectColor, .5);
+```
+
+Let's also change our material like this:
+```python
+# Initialize water material if necessary
+if self.water_mat is None:
+    WaterPlane.water_mat = Material()
+    self.water_mat.set_ambient(Vec4(1, 1, 1, 1))
+    self.water_mat.set_diffuse(Vec4(.8, .8, .8, 1))
+    self.water_mat.set_specular(Vec3(.5, .5, .5))
+    self.water_mat.set_shininess(32)
+```
+
+If you run your code at this point, you will notice that the reflections look off like in this screenshot:
+reflection bug

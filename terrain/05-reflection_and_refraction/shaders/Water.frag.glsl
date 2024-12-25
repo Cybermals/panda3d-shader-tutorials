@@ -2,6 +2,7 @@
 
 in vec3 fragPos;
 in vec3 normal;
+in vec2 uv;
 
 uniform mat4 p3d_ViewMatrix;
 uniform struct p3d_LightModelParameters {
@@ -60,6 +61,8 @@ uniform struct p3d_FogParameters {
     float end;
     float scale; // 1.0 / (end - start)
 } p3d_Fog;
+uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
 
 out vec4 p3d_FragColor;
 
@@ -163,8 +166,17 @@ vec4 applyFog(vec4 color) {
 
 
 void main() {
+    // Calculate refraction and reflection UV coordinates
+    vec2 texelSize = 1 / vec2(textureSize(p3d_Texture0, 0));
+    vec2 ndc = gl_FragCoord.xy * texelSize;
+    vec2 refractUV = vec2(ndc.x, ndc.y);
+    vec2 reflectUV = vec2(-ndc.x, ndc.y);
+
     // Calculate base color
-    vec4 baseColor = vec4(1, 1, 1, 1);
+    vec4 refractColor = texture(p3d_Texture0, refractUV);
+    vec4 reflectColor = texture(p3d_Texture1, reflectUV);
+
+    vec4 baseColor = mix(refractColor, reflectColor, .5);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));
