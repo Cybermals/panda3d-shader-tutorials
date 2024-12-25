@@ -233,3 +233,6 @@ if self.water_mat is None:
 
 If you run your code at this point, you will notice that the reflections look off like in this screenshot:  
 ![reflection bug](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/03-reflection_bug.png?raw=true)
+
+This bug occurs when the width of the window is not a power of 2. The reason why it occurs is because the texture gets padding added to make its width a power of 2 which leaves a portion of the texture blank like in this diagram:
+texture padding

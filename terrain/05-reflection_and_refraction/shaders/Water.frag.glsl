@@ -61,6 +61,7 @@ uniform struct p3d_FogParameters {
     float end;
     float scale; // 1.0 / (end - start)
 } p3d_Fog;
+uniform vec2 winSize;
 uniform sampler2D p3d_Texture0;
 uniform sampler2D p3d_Texture1;
 
@@ -167,10 +168,11 @@ vec4 applyFog(vec4 color) {
 
 void main() {
     // Calculate refraction and reflection UV coordinates
-    vec2 texelSize = 1 / vec2(textureSize(p3d_Texture0, 0));
+    vec2 texSize = textureSize(p3d_Texture0, 0).xy;
+    vec2 texelSize = 1 / texSize;
     vec2 ndc = gl_FragCoord.xy * texelSize;
     vec2 refractUV = vec2(ndc.x, ndc.y);
-    vec2 reflectUV = vec2(-ndc.x, ndc.y);
+    vec2 reflectUV = vec2(-((texSize.x - winSize.x) * texelSize.x + ndc.x), ndc.y);
 
     // Calculate base color
     vec4 refractColor = texture(p3d_Texture0, refractUV);

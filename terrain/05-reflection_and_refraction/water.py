@@ -143,4 +143,7 @@ class WaterPlane(object):
         self.reflect_cam.set_z(self.reflect_cam.get_z() - dist * 2)
         self.reflect_cam.set_p(-self.reflect_cam.get_p())
         self.reflect_cam.set_r(self.reflect_cam.get_r() + 180)
+
+        # Update window size uniform
+        self.plane.set_shader_input("winSize", base.win.get_size())
         return task.cont
