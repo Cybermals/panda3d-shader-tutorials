@@ -258,5 +258,5 @@ And in the `update` method of our `WaterPlane` class, we need to set the window 
 self.plane.set_shader_input("winSize", base.win.get_size())
 ```
 
-If we run the code now, it should have correct reflections on the water surface:
-reflections
+If we run the code now, it should have correct reflections on the water surface:  
+![reflections](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/04-reflections.png?raw=true)
