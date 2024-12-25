@@ -38,5 +38,5 @@ self.plane.set_texture(stage1, self.reflect_tex)
 self.plane.set_texture(stage2, self.dudv_map_tex)
 ```
 
-If you run your code now, you should see some distortion on the surface of the water now:
-distortion
+If you run your code now, you should see some distortion on the surface of the water now:  
+![distortion](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/06-distortion/screenshots/01-distortion.png?raw=true)
