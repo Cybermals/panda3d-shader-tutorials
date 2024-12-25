@@ -65,6 +65,8 @@ uniform vec2 winSize;
 uniform sampler2D p3d_Texture0;
 uniform sampler2D p3d_Texture1;
 uniform sampler2D p3d_Texture2;
+uniform float osg_FrameTime;
+uniform float waveSpeed;
 
 out vec4 p3d_FragColor;
 
@@ -176,8 +178,8 @@ void main() {
     vec2 reflectUV = vec2(-((texSize.x - winSize.x) * texelSize.x + ndc.x), ndc.y);
 
     // Apply distortion
-    vec2 distortedUV = texture(p3d_Texture2, vec2(uv.x, uv.y)).rg * .1;
-    distortedUV = uv + vec2(distortedUV.x, distortedUV.y);
+    vec2 distortedUV = texture(p3d_Texture2, vec2(uv.x + osg_FrameTime * waveSpeed, uv.y)).rg * .1;
+    distortedUV = uv + vec2(distortedUV.x, distortedUV.y + osg_FrameTime * waveSpeed);
     vec2 totalDistortion = (texture(p3d_Texture2, distortedUV).rg * 2 - 1) * .02;
     
     refractUV += totalDistortion;
@@ -192,6 +194,8 @@ void main() {
     vec4 reflectColor = texture(p3d_Texture1, reflectUV);
 
     vec4 baseColor = mix(refractColor, reflectColor, .5);
+
+    baseColor = mix(baseColor, vec4(0, .225, .5, 1), .2);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));

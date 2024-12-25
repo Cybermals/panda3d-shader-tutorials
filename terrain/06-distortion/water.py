@@ -114,6 +114,7 @@ class WaterPlane(object):
         self.plane.set_scale(scale)
 
         self.plane.set_shader(self.water_shader)
+        self.plane.set_shader_input("waveSpeed", .01)
 
         stage1 = TextureStage("ReflectionTex")
         stage2 = TextureStage("DUDVMap")
