@@ -4,11 +4,9 @@ in vec4 p3d_Vertex;
 
 uniform mat4 p3d_ModelViewMatrix;
 uniform mat4 p3d_ModelViewProjectionMatrix;
-uniform mat3 p3d_NormalMatrix;
 uniform vec4 p3d_ClipPlane[1];
 
 out vec3 fragPos;
-out vec3 normal;
 out vec2 uv;
 
 

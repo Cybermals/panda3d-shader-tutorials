@@ -40,7 +40,7 @@ We will also need to modify the last part of our `main` function like this:
 p3d_FragColor = applyFog(applyLighting(baseColor, distortedUV));
 ```
 
-Then we need to remove the `normal` output attribute from our vertex shader and we also need to rewrite our `main` function like this:
+Then we need to remove the `p3d_NormalMatrix` uniform and `normal` output attribute from our vertex shader. We also need to rewrite our `main` function like this:
 ```glsl
 void main() {
     // Calculate position and fragment position
