@@ -74,5 +74,5 @@ self.plane.set_texture(stage2, self.dudv_map_tex)
 self.plane.set_texture(stage3, self.normal_map_tex)
 ```
 
-If we run our code now, the lighting on the surface of the water should be better:
-normal mapping
+If we run our code now, the lighting on the surface of the water should be better:  
+![normal mapping](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/07-normal_mapping/screenshots/01-normal_mapping.png?raw=true)
