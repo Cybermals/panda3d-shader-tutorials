@@ -156,5 +156,5 @@ self.plane.set_shader_input("near", cam_lens.get_near())
 self.plane.set_shader_input("far", cam_lens.get_far())
 ```
 
-If you run your code now, you should see that the edges look softer:
-soft edges
+If you run your code now, you should see that the edges look softer:  
+![soft edges](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/09-soft_edges/screenshots/01-soft_edges.png?raw=true)
