@@ -156,5 +156,19 @@ self.plane.set_shader_input("near", cam_lens.get_near())
 self.plane.set_shader_input("far", cam_lens.get_far())
 ```
 
+We also need to add an additional texture stage for the refraction depth texture:
+```python
+stage1 = TextureStage("ReflectionTex")
+stage2 = TextureStage("DUDVMap")
+stage3 = TextureStage("NormalMap")
+stage4 = TextureStage("RefractionDepth")
+
+self.plane.set_texture(self.refract_tex)
+self.plane.set_texture(stage1, self.reflect_tex)
+self.plane.set_texture(stage2, self.dudv_map_tex)
+self.plane.set_texture(stage3, self.normal_map_tex)
+self.plane.set_texture(stage4, self.refract_depth_tex)
+```
+
 If you run your code now, you should see that the edges look softer:  
 ![soft edges](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/09-soft_edges/screenshots/01-soft_edges.png?raw=true)

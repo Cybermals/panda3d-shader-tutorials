@@ -125,11 +125,13 @@ class WaterPlane(object):
         stage1 = TextureStage("ReflectionTex")
         stage2 = TextureStage("DUDVMap")
         stage3 = TextureStage("NormalMap")
+        stage4 = TextureStage("RefractionDepth")
 
         self.plane.set_texture(self.refract_tex)
         self.plane.set_texture(stage1, self.reflect_tex)
         self.plane.set_texture(stage2, self.dudv_map_tex)
         self.plane.set_texture(stage3, self.normal_map_tex)
+        self.plane.set_texture(stage4, self.refract_depth_tex)
 
         self.plane.set_material(self.water_mat)
 
