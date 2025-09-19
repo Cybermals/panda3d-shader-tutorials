@@ -76,36 +76,45 @@ uniform struct p3d_LightSourceParameters {
 } p3d_LightSource[2];
 ```
 
-The number in square brackets should be equal to the total number of directional, point, and spot lights in the scene. If the `w` component of a light source's `position` member is equal to 0, then it is a directional light. Otherwise, it is a point or spot light. For now, we will only be covering directional and point lights. To simplify things, let's define separate functions for handling directional and point lights. We will start by defining a function called `calcDirectionalLighting`:
-```glsl
-vec4 calcDirectionalLighting(int lightIdx, vec3 normal) {
-    // Calculate light vector
-    vec3 lightVector = normalize(p3d_LightSource[lightIdx].position.xyz);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir;
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse));
-}
-```
-
-For the given light and normal, this function will first normalize the light vector passed in the `position` member of the light. Next, it will calculate the diffuse factor by calculating the dot product of the normal and light vector. The result will be set to 0 if it is less than 0 via the `max` function. Then we will multiply the color of the given light source by the diffuse factor to get the diffuse color. Afterwards, all we have to do is add the product of the diffuse color and the `diffuse` material property to the product of the ambient light color and the `ambient` material property to get the total color for the given light. We can test our new diffuse lighting by rewriting our `applyLighting` function like this:
+The number in square brackets should be equal to the total number of directional, point, and spot lights in the scene. If the `w` component of a light source's `position` member is equal to 0, then it is a directional light. Otherwise, it is a point or spot light. For now, we will only be covering directional and point lights. We can handle both by rewriting our `applyLighting` function like this:
 ```glsl
 vec4 applyLighting(vec4 color) {
     // Normalize normal
     vec3 norm = normalize(normal);
 
     // Calculate lighting
-    vec4 lighting = calcDirectionalLighting(0, norm);
+    vec4 lighting = vec4(0.0);
+
+    for(int i = 0; i < p3d_LightSource.length(); i++) {
+        // Calculate light vector
+        vec3 lightVector = p3d_LightSource[i].position.xyz - fragPos * 
+            p3d_LightSource[i].position.w;
+
+        // Calculate attenuation
+        float dist = length(lightVector);
+        float attenuation = 1.0 / (p3d_LightSource[i].constantAttenuation + 
+            p3d_LightSource[i].linearAttenuation * dist + 
+            p3d_LightSource[i].quadraticAttenuation * dist * dist);
+
+        // Normalize light vector
+        lightVector = normalize(lightVector);
+
+        // Calculate diffuse lighting
+        float nxDir = max(0.0, dot(normal, lightVector));
+        vec4 diffuse = p3d_LightSource[i].color * nxDir * attenuation;
+
+        // Calculate total lighting
+        lighting += (p3d_LightModel.ambient * p3d_Material.ambient + 
+            (diffuse * p3d_Material.diffuse));
+    }
 
     // Apply lighting to initial color
     lighting.a = color.a;
     return color * lighting;
 }
 ```
+
+For the given light and normal, this function will first calculate the light vector by multiplying the fragment position by the W component of the light position and subtracting it from the XYZ portion of the light position. Then it will calculate attenuation based on the length of the light vector. Next it will normalize the light vector. Then the diffuse lighting will be calculated using the dot product of the normal and light vector as well as the light color and attenuation. The ambient and diffuse lighting will then be multiplied by their respective material properties and added to the total light value. Last, the alpha component will be set to the initial alpha and the product of the base color and lighting will be returned.
 
 If you run your code at this point, you should see a blue sphere with diffuse shading:  
 ![diffuse sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/04-diffuse_lighting/screenshots/01-diffuse_sphere.png?raw=true)

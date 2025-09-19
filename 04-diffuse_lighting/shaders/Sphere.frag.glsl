@@ -56,57 +56,34 @@ uniform struct p3d_MaterialParameters {
 out vec4 p3d_FragColor;
 
 
-vec4 calcDirectionalLighting(int lightIdx, vec3 normal) {
-    // Calculate light vector
-    vec3 lightVector = normalize(p3d_LightSource[lightIdx].position.xyz);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir;
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse));
-}
-
-
-vec4 calcPointLighting(int lightIdx, vec3 normal) {
-    // Calculate light vector
-    vec3 lightVector = p3d_LightSource[lightIdx].position.xyz - fragPos;
-
-    // Calculate attenuation
-    float dist = length(lightVector);
-    float attenuation = 1 / (p3d_LightSource[lightIdx].constantAttenuation + 
-        p3d_LightSource[lightIdx].linearAttenuation * dist + 
-        p3d_LightSource[lightIdx].quadraticAttenuation * dist * dist);
-
-    // Normalize light vector
-    lightVector = normalize(lightVector);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir * attenuation;
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse));
-}
-
-
 vec4 applyLighting(vec4 color) {
     // Normalize normal
     vec3 norm = normalize(normal);
 
     // Calculate lighting
-    vec4 lighting = vec4(0);
+    vec4 lighting = vec4(0.0);
 
     for(int i = 0; i < p3d_LightSource.length(); i++) {
-        // Calculate directional or point lighting
-        if(p3d_LightSource[i].position.w == 0) {
-            lighting += calcDirectionalLighting(i, norm);
-        } else {
-            lighting += calcPointLighting(i, norm);
-        }
+        // Calculate light vector
+        vec3 lightVector = p3d_LightSource[i].position.xyz - fragPos * 
+            p3d_LightSource[i].position.w;
+
+        // Calculate attenuation
+        float dist = length(lightVector);
+        float attenuation = 1.0 / (p3d_LightSource[i].constantAttenuation + 
+            p3d_LightSource[i].linearAttenuation * dist + 
+            p3d_LightSource[i].quadraticAttenuation * dist * dist);
+
+        // Normalize light vector
+        lightVector = normalize(lightVector);
+
+        // Calculate diffuse lighting
+        float nxDir = max(0.0, dot(normal, lightVector));
+        vec4 diffuse = p3d_LightSource[i].color * nxDir * attenuation;
+
+        // Calculate total lighting
+        lighting += (p3d_LightModel.ambient * p3d_Material.ambient + 
+            (diffuse * p3d_Material.diffuse));
     }
 
     // Apply lighting to initial color
@@ -117,7 +94,7 @@ vec4 applyLighting(vec4 color) {
 
 void main() {
     // Calculate base color
-    vec4 baseColor = vec4(0, .225, .8, 1);
+    vec4 baseColor = vec4(0.0, .225, .8, 1.0);
 
     // Calculate final color
     p3d_FragColor = applyLighting(baseColor);
