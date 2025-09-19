@@ -1,13 +1,13 @@
 # Lesson 5: Reflection and Refraction
 
 In this lesson, I will show you how to add reflection and refraction to our water plane. In order to do this, we will need to render the scene to 2 textures. Let's start by discussing how this will work. When looking at the water, objects below the water will get refracted on the surface of the water:  
-![refraction diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/01-refraction.png?raw=true)
+![refraction diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/diagrams/01-refraction.png?raw=true)
 
 And objects above the water will get reflected on the surface of the water:  
-![reflection diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/02-reflection.png?raw=true)
+![reflection diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/diagrams/02-reflection.png?raw=true)
 
 We can create a refraction texture by rendering the scene from the viewpoint of the main camera, however we must use a slightly different approach for rendering the reflection texture. In order to capture the objects above the water, we will need to render the scene from a camera below the water and looking up as depicted in this diagram:  
-![reflection camera](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/03-reflection_camera.png?raw=true)
+![reflection camera](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/diagrams/03-reflection_camera.png?raw=true)
 
 The first thing we will need to do, is to setup 2 texture buffers we can use to render our reflection and refraction textures. Modify your imports like this:
 ```python
@@ -92,7 +92,7 @@ base.task_mgr.add(self.update_cameras, "update_water_cameras")
 ```
 
 Now if you run your code, you should see the content of your reflection and refraction textures change as you move the camera around the scene:  
-![texture buffers](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/01-texture_buffers.png?raw=true)
+![texture buffers](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/screenshots/01-texture_buffers.png?raw=true)
 
 However, our refraction texture should only contain everything below the water and our reflection texture should only contain everything above the water. To enforce this, we will add custom clipping planes. Start by modifying your imports like this:
 ```python
@@ -147,7 +147,7 @@ gl_ClipDistance[0] = dot(vec4(fragPos, 1), p3d_ClipPlane[0]);
 ```
 
 You will also need to make the same changes to your terrain vertex shader. Once you have made these changes, your reflection and refraction textures should only be rendering part of the scene:  
-![clipping planes](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/02-clip_planes.png?raw=true)
+![clipping planes](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/screenshots/02-clip_planes.png?raw=true)
 
 Now let's apply our reflection and refraction textures to the water plane. We need to start by modifying our imports like this:
 ```python
@@ -232,10 +232,10 @@ if self.water_mat is None:
 ```
 
 If you run your code at this point, you will notice that the reflections look off like in this screenshot:  
-![reflection bug](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/03-reflection_bug.png?raw=true)
+![reflection bug](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/screenshots/03-reflection_bug.png?raw=true)
 
 This bug occurs when the width of the window is not a power of 2. The reason why it occurs is because the texture gets padding added to make its width a power of 2 which leaves a portion of the texture blank like in this diagram:  
-![texture padding](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/diagrams/04-texture_padding.png?raw=true)
+![texture padding](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/diagrams/04-texture_padding.png?raw=true)
 
 The green area of the diagram gets rendered to, but the black area is padding that doesn't get rendered to. However, we can fix the bug by simply adjusting our calculations so we skip over the padding. First we need to add another uniform to our fragment shader:
 ```glsl
@@ -259,4 +259,4 @@ self.plane.set_shader_input("winSize", base.win.get_size())
 ```
 
 If we run the code now, it should have correct reflections on the water surface:  
-![reflections](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/05-reflection_and_refraction/screenshots/04-reflections.png?raw=true)
+![reflections](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/05-reflection_and_refraction/screenshots/04-reflections.png?raw=true)

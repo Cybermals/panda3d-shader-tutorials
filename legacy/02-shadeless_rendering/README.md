@@ -80,7 +80,7 @@ self.sphere.reparent_to(self.render)
 ```
 
 If you run your code now, you should see an unshaded light blue sphere:  
-![unshaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/02-shadeless_rendering/screenshots/01-unshaded_sphere.png?raw=true)
+![unshaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/02-shadeless_rendering/screenshots/01-unshaded_sphere.png?raw=true)
 
 If your sphere looks the same as before you loaded your custom shader, then most likely there were errors in your shader code. Whenever there are errors in your shader code, Panda3D will print error messages to the terminal regarding what shaders failed to compile as well as why they failed to compile.  
 

@@ -1,7 +1,7 @@
 # Lesson 4: Diffuse Lighting
 
 When light rays strike the surface of an object, part of the light gets absorbed into the surface. We can simulate this by using an algorithm known as Blinn-Phong shading. In the following diagram, we see a light source (L) casting a ray (V) onto a surface (S). We also see a vector (N) perpendicular to the surface (S). Ray (V) is known as the light vector and vector (N) is known as the surface normal:  
-![diffuse lighting diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/04-diffuse_lighting/diagrams/01-diffuse_lighting.png?raw=true)
+![diffuse lighting diagram](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/04-diffuse_lighting/diagrams/01-diffuse_lighting.png?raw=true)
 
 In order to determine how much diffuse lighting from a given light source should affect a surface, we need to calculate the angle (T) between the surface normal (N) and the light vector (V). Let's start by calculating the surface normal in our vertex shader. First we need to add another input attribute `p3d_Normal` that will receive the per-vertex surface normal:
 ```glsl
@@ -121,6 +121,6 @@ vec4 applyLighting(vec4 color) {
 For the given light and normal, this function will first calculate the light vector by multiplying the fragment position by the W component of the light position and subtracting it from the XYZ portion of the light position. Then it will calculate attenuation based on the length of the light vector. Next it will normalize the light vector. Then the diffuse lighting will be calculated using the dot product of the normal and light vector as well as the light color and attenuation. The ambient and diffuse lighting will then be multiplied by their respective material properties and added to the total light value. Last, the alpha component will be set to the initial alpha and the product of the base color and lighting will be returned.
 
 If you run your code at this point, you should see a blue sphere with diffuse shading:  
-![diffuse sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/04-diffuse_lighting/screenshots/01-diffuse_sphere.png?raw=true)
+![diffuse sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/04-diffuse_lighting/screenshots/01-diffuse_sphere.png?raw=true)
 
 Now that we have fully implemented diffuse lighting, we can proceed to implement specular lighting.

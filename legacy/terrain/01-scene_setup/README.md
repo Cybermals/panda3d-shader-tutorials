@@ -20,7 +20,7 @@ if __name__ == "__main__":
 ```
 
 Now we need to load some terrain to test our shaders on. For this tutorial series we will be using a simple terrain mesh. In a production grade project, you will need to decide what sort of terrain system to use based on the properties of the terrain. Download the terrain meshes from the following URL:
-https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/terrain/meshes.zip
+https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/legacy/terrain/meshes.zip
 
 Then unpack the zip file so your project structure looks like:
 ```
@@ -40,7 +40,7 @@ self.terrain.reparent_to(self.render)
 ```
 
 If we run your code at this point, you will see a solid white mass:  
-![shadeless terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/01-shadeless_terrain.png?raw=true)
+![shadeless terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/01-scene_setup/screenshots/01-shadeless_terrain.png?raw=true)
 
 Let's improve the appearance of our terrain by enabling auto shaders and setting up some basic lighting. Add the following to your imports:
 ```python
@@ -67,6 +67,6 @@ self.render.set_light(self.sun)
 ```
 
 Now if you run your code, you should be able to see the terrain contour much better:  
-![shaded terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/01-scene_setup/screenshots/02-shaded_terrain.png?raw=true)
+![shaded terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/01-scene_setup/screenshots/02-shaded_terrain.png?raw=true)
 
 However, our terrain still has no texture at this point. We could simply apply a single texture to the terrain surface, but doing so would limit what we could do with our terrain. However, there is a technique we can use to use multiple textures on the same terrain to achieve a high quality for our terrain appearance.

@@ -25,10 +25,10 @@ if __name__ == "__main__":
 ```
 
 If you run your code at this point, you should see a window like this:  
-![window screenshot](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/01-window.png?raw=true)
+![window screenshot](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/01-scene_setup/screenshots/01-window.png?raw=true)
 
 Next we are going to need a mesh to display. We will be using a sphere mesh to help visualize the effect different shaders have on the surface of a mesh. For convenience, I have prepared a simple sphere mesh with a color UV grid texture for you to use. Use the following link to download the mesh:  
-https://raw.githubusercontent.com/Cybermals/panda3d-shader-tutorials/refs/heads/main/meshes.zip  
+https://raw.githubusercontent.com/Cybermals/panda3d-shader-tutorials/refs/heads/main/legacy/meshes.zip  
 
 After you have downloaded the sphere mesh, unzip it and place it into your project folder so you end up with a folder structure like this:
 ```
@@ -49,7 +49,7 @@ self.sphere.reparent_to(self.render)
 ```
 
 If you run your code at this point, you should see a textured sphere like this:  
-![sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/02-sphere.png?raw=true)
+![sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/01-scene_setup/screenshots/02-sphere.png?raw=true)
 
 At the moment our sphere is unshaded though, so let's add some lighting to our scene. At the top of `main.py`, add the following additional imports:
 ```python
@@ -81,7 +81,7 @@ self.render.set_light(self.green_light)
 ```
 
 If you run your code at this point, you will see that the sphere now has 2 specular highlights and some nice shading on the sides facing away from the light sources:  
-![shaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/03-shaded_sphere.png?raw=true)
+![shaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/01-scene_setup/screenshots/03-shaded_sphere.png?raw=true)
 
 Next let's enable automatic shaders. This will improve the quality of our mesh a bit. In the `__init__` method of the `ShaderDemo` class, add the following code above where you setup your lighting:
 ```python
@@ -90,6 +90,6 @@ self.render.set_shader_auto()
 ```
 
 The differences are subtle, but if you look closely, you will see that now the specular highlights are a bit smoother around the edges:  
-![auto shaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/01-scene_setup/screenshots/04-auto_shader.png?raw=true)
+![auto shaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/01-scene_setup/screenshots/04-auto_shader.png?raw=true)
 
 Now that we have our simple scene setup, we are ready to start writing some custom shaders in the next lesson.

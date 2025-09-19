@@ -38,4 +38,4 @@ void main() {
 ```
 
 If you run your code at this point, you will see a textured sphere with diffuse and specular lighting:
-![textured sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/06-texture/screenshots/01-textured_sphere.png?raw=true)
+![textured sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/06-texture/screenshots/01-textured_sphere.png?raw=true)

@@ -63,6 +63,6 @@ void main() {
 ```
 
 If you run your code now, you will see a sphere will a slight foggy appearance. Try holding the Ctrl key and slowing dragging up/down with the mouse to move the camera farther/nearer from the sphere and you will see how the fog changes based on distance from the sphere:
-![fog 1](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/07-fog/screenshots/01-fog.png?raw=true)  
-![fog 2](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/07-fog/screenshots/02-fog.png?raw=true)  
-![fog 3](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/07-fog/screenshots/03-fog.png?raw=true)
+![fog 1](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/07-fog/screenshots/01-fog.png?raw=true)  
+![fog 2](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/07-fog/screenshots/02-fog.png?raw=true)  
+![fog 3](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/07-fog/screenshots/03-fog.png?raw=true)

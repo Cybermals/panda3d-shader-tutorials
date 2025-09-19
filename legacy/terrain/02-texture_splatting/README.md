@@ -208,7 +208,7 @@ self.terrain.set_shader(self.terrain_shader)
 ```
 
 If you run your code at this point, you won't see any differences because we haven't yet loaded any textures for our terrain. For this tutorial series, we will be using some simple terrain textures I made. Download the zip file from the following URL:
-https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/terrain/images.zip
+https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/legacy/terrain/images.zip
 
 Now extract the zip file so your folder structure looks like this:
 ```
@@ -258,7 +258,7 @@ self.terrain.set_texture(self.grass_tex)
 ```
 
 If you run your code at this point, you will see a texture on the terrain like this:  
-![basic texture](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/01-basic_texture.png?raw=true)
+![basic texture](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/02-texture_splatting/screenshots/01-basic_texture.png?raw=true)
 
 However, the resolution of the texture is low due to the way it is being stretched to fit the terrain. Let's fix this by scaling the texture in our shader. And let's also make it so we can set the scale via a shader input. First, we need to add a new uniform `texScale0` to our fragment shader:
 ```glsl
@@ -290,7 +290,7 @@ self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
 ```
 
 If you run your code at this point, you will see that the resolution of the texture on the terrain has improved:  
-![texture scaling](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/02-texture_scaling.png?raw=true)
+![texture scaling](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/02-texture_splatting/screenshots/02-texture_scaling.png?raw=true)
 
 However, we are still only using one texture on our terrain. Let's try loading some more textures next:
 ```python
@@ -415,6 +415,6 @@ baseColor = mix(baseColor, layer3, mask0.b);
 ```
 
 The idea is that black represents the base texture. In this case our base texure is grass. Red represents the layer 1 texure which is dirt in this case. Green represents the layer 2 texture which is rock in this case. And blue represents the layer 3 texture which is blank in this case. If you run your code now, you will see that the terrain now has grass, dirt, and rock:  
-![texture splatting](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/02-texture_splatting/screenshots/03-texture_splatting.png?raw=true)
+![texture splatting](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/02-texture_splatting/screenshots/03-texture_splatting.png?raw=true)
 
 If you need more textures, you can add 3 more textures and another mask. Each additional mask lets you use 3 more textures.

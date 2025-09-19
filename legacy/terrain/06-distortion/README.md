@@ -39,7 +39,7 @@ self.plane.set_texture(stage2, self.dudv_map_tex)
 ```
 
 If you run your code now, you should see some distortion on the surface of the water now:  
-![distortion](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/terrain/06-distortion/screenshots/01-distortion.png?raw=true)
+![distortion](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/06-distortion/screenshots/01-distortion.png?raw=true)
 
 Now let's make the water move. To do this, we can use the `osg_FrameTime` uniform. It receives the current frame time from Panda3D and we can add it to our UV coordinates to make them scroll. We will also add a uniform for controlling the speed of the scrolling animation. First we need to add some new uniforms to our fragment shader:
 ```glsl
