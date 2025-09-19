@@ -30,7 +30,8 @@ class ShaderDemo(ShowBase):
 
         self.green_light = self.render.attach_new_node(PointLight("GreenLight"))
         self.green_light.node().set_color(Vec4(0, 1, 0, 1))
-        self.green_light.set_pos(0, 0, 0)
+        self.green_light.node().set_attenuation(Vec3(1, .1, .5))
+        self.green_light.set_pos(0, 3, 0)
         self.render.set_light(self.green_light)
 
         # Load custom shaders
