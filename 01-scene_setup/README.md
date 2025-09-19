@@ -65,18 +65,19 @@ from panda3d.core import (
 And inside the `__init__` method of the `ShaderDemo` class, add this code before the part where you load the sphere mesh:
 ```python
 # Setup lighting
-    self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
-    self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
-    self.render.set_light(self.ambient_light)
+self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
+self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
+self.render.set_light(self.ambient_light)
 
-    self.sun = self.render.attach_new_node(DirectionalLight("Sun"))
-    self.sun.set_hpr(45, -45, 0)
-    self.render.set_light(self.sun)
+self.sun = self.render.attach_new_node(DirectionalLight("Sun"))
+self.sun.set_hpr(45, -45, 0)
+self.render.set_light(self.sun)
 
-    self.green_light = self.render.attach_new_node(PointLight("GreenLight"))
-    self.green_light.node().set_color(Vec4(0, 1, 0, 1))
-    self.green_light.set_pos(0, 0, 0)
-    self.render.set_light(self.green_light)
+self.green_light = self.render.attach_new_node(PointLight("GreenLight"))
+self.green_light.node().set_color(Vec4(0, 1, 0, 1))
+self.green_light.node().set_attenuation(Vec3(1, .1, .5))
+self.green_light.set_pos(0, 3, 0)
+self.render.set_light(self.green_light)
 ```
 
 If you run your code at this point, you will see that the sphere now has 2 specular highlights and some nice shading on the sides facing away from the light sources:  
