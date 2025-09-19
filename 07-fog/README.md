@@ -44,7 +44,7 @@ vec4 applyFog(vec4 color) {
     // Calculate linear fog
     float dist = length(fragPos);
     float fogFactor = (p3d_Fog.end - dist) / (p3d_Fog.end - p3d_Fog.start);
-    fogFactor = clamp(fogFactor, 0, 1);
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
     return mix(p3d_Fog.color, color, fogFactor);
 }
 ```
