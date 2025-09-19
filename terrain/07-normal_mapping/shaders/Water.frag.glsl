@@ -71,67 +71,6 @@ uniform float waveSpeed;
 out vec4 p3d_FragColor;
 
 
-vec4 calcDirectionalLighting(int lightIdx, vec3 normal, vec3 cameraPos) {
-    // Calculate light vector
-    vec3 lightVector = normalize(p3d_LightSource[lightIdx].position.xyz);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir;
-
-    // Calculate specular lighting
-    vec4 specular = vec4(0);
-
-    if(nxDir != 0) {
-        vec3 cameraVector = normalize(cameraPos - fragPos);
-        vec3 halfVector = normalize(lightVector + cameraVector);
-        float nxHalf = max(0, dot(normal, halfVector));
-        float specularPower = pow(nxHalf, p3d_Material.shininess);
-        specular = p3d_LightSource[lightIdx].color * specularPower;
-    }
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse) + 
-        (specular * vec4(p3d_Material.specular, 1)));
-}
-
-
-vec4 calcPointLighting(int lightIdx, vec3 normal, vec3 cameraPos) {
-    // Calculate light vector
-    vec3 lightVector = p3d_LightSource[lightIdx].position.xyz - fragPos;
-
-    // Calculate attenuation
-    float dist = length(lightVector);
-    float attenuation = 1 / (p3d_LightSource[lightIdx].constantAttenuation + 
-        p3d_LightSource[lightIdx].linearAttenuation * dist + 
-        p3d_LightSource[lightIdx].quadraticAttenuation * dist * dist);
-
-    // Normalize light vector
-    lightVector = normalize(lightVector);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir * attenuation;
-
-    // Calculate specular lighting
-    vec4 specular = vec4(0);
-
-    if(nxDir != 0) {
-        vec3 cameraVector = normalize(cameraPos - fragPos);
-        vec3 halfVector = normalize(lightVector + cameraVector);
-        float nxHalf = max(0, dot(normal, halfVector));
-        float specularPower = pow(nxHalf, p3d_Material.shininess);
-        specular = p3d_LightSource[lightIdx].color * specularPower * attenuation;
-    }
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse) + 
-        (specular * vec4(p3d_Material.specular, 1)));
-}
-
-
 vec4 applyLighting(vec4 color, vec2 distortedUV) {
     // Fetch normal from normal map and remap it
     vec3 normal = texture(p3d_Texture3, distortedUV).xzy;
@@ -142,15 +81,38 @@ vec4 applyLighting(vec4 color, vec2 distortedUV) {
     vec3 cameraPos = p3d_ViewMatrix[3].xyz;
 
     // Calculate lighting
-    vec4 lighting = vec4(0);
+    vec4 lighting = vec4(0.0);
 
     for(int i = 0; i < p3d_LightSource.length(); i++) {
-        // Calculate directional or point lighting
-        if(p3d_LightSource[i].position.w == 0) {
-            lighting += calcDirectionalLighting(i, norm, cameraPos);
-        } else {
-            lighting += calcPointLighting(i, norm, cameraPos);
-        }
+        // Calculate light vector
+        vec3 lightVector = p3d_LightSource[i].position.xyz - fragPos * 
+            p3d_LightSource[i].position.w;
+
+        // Calculate attenuation
+        float dist = length(lightVector);
+        float attenuation = 1.0 / (p3d_LightSource[i].constantAttenuation + 
+            p3d_LightSource[i].linearAttenuation * dist + 
+            p3d_LightSource[i].quadraticAttenuation * dist * dist);
+
+        // Normalize light vector
+        lightVector = normalize(lightVector);
+
+        // Calculate diffuse lighting
+        float nxDir = max(0.0, dot(norm, lightVector));
+        vec4 diffuse = p3d_LightSource[i].color * nxDir * attenuation;
+
+        // Calculate specular lighting
+        vec3 cameraVector = normalize(cameraPos - fragPos);
+        vec3 halfVector = normalize(lightVector + cameraVector);
+        float nxHalf = max(0.0, dot(norm, halfVector));
+        float specularPower = pow(nxHalf, p3d_Material.shininess);
+        vec4 specular = p3d_LightSource[i].color * specularPower * 
+            attenuation * int(nxDir != 0.0);
+
+        // Calculate total lighting
+        lighting += (p3d_LightModel.ambient * p3d_Material.ambient + 
+            (diffuse * p3d_Material.diffuse) + 
+            (specular * vec4(p3d_Material.specular, 1.0)));
     }
 
     // Apply lighting to initial color
