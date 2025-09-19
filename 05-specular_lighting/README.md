@@ -8,7 +8,7 @@ First we need to calculate the camera vector. To do this we will first need to g
 uniform mat4 p3d_ViewMatrix;
 ```
 
-Next we need to rewrite our `applyLighting` function so it extracts the camera position from the view matrix and passes it as a parameter to either light calculation function:
+Next we need to rewrite our `applyLighting` function so it calculates specular lighting:
 ```glsl
 vec4 applyLighting(vec4 color) {
     // Normalize normal and extract camera position from view matrix
@@ -16,15 +16,38 @@ vec4 applyLighting(vec4 color) {
     vec3 cameraPos = p3d_ViewMatrix[3].xyz;
 
     // Calculate lighting
-    vec4 lighting = vec4(0);
+    vec4 lighting = vec4(0.0);
 
     for(int i = 0; i < p3d_LightSource.length(); i++) {
-        // Calculate directional or point lighting
-        if(p3d_LightSource[i].position.w == 0) {
-            lighting += calcDirectionalLighting(i, norm, cameraPos);
-        } else {
-            lighting += calcPointLighting(i, norm, cameraPos);
-        }
+        // Calculate light vector
+        vec3 lightVector = p3d_LightSource[i].position.xyz - fragPos * 
+            p3d_LightSource[i].position.w;
+
+        // Calculate attenuation
+        float dist = length(lightVector);
+        float attenuation = 1.0 / (p3d_LightSource[i].constantAttenuation + 
+            p3d_LightSource[i].linearAttenuation * dist + 
+            p3d_LightSource[i].quadraticAttenuation * dist * dist);
+
+        // Normalize light vector
+        lightVector = normalize(lightVector);
+
+        // Calculate diffuse lighting
+        float nxDir = max(0.0, dot(norm, lightVector));
+        vec4 diffuse = p3d_LightSource[i].color * nxDir * attenuation;
+
+        // Calculate specular lighting
+        vec3 cameraVector = normalize(cameraPos - fragPos);
+        vec3 halfVector = normalize(lightVector + cameraVector);
+        float nxHalf = max(0.0, dot(norm, halfVector));
+        float specularPower = pow(nxHalf, p3d_Material.shininess);
+        vec4 specular = p3d_LightSource[i].color * specularPower * 
+            attenuation * int(nxDir != 0.0);
+
+        // Calculate total lighting
+        lighting += (p3d_LightModel.ambient * p3d_Material.ambient + 
+            (diffuse * p3d_Material.diffuse) + 
+            (specular * vec4(p3d_Material.specular, 1.0)));
     }
 
     // Apply lighting to initial color
@@ -33,72 +56,7 @@ vec4 applyLighting(vec4 color) {
 }
 ```
 
-Next we need to rewrite our `calcDirectionalLight` function so it calculates specular lighting:
-```glsl
-vec4 calcDirectionalLighting(int lightIdx, vec3 normal, vec3 cameraPos) {
-    // Calculate light vector
-    vec3 lightVector = normalize(p3d_LightSource[lightIdx].position.xyz);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir;
-
-    // Calculate specular lighting
-    vec4 specular = vec4(0);
-
-    if(nxDir != 0) {
-        vec3 cameraVector = normalize(cameraPos - fragPos);
-        vec3 halfVector = normalize(lightVector + cameraVector);
-        float nxHalf = max(0, dot(normal, halfVector));
-        float specularPower = pow(nxHalf, p3d_Material.shininess);
-        specular = p3d_LightSource[lightIdx].color * specularPower;
-    }
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse) + 
-        (specular * vec4(p3d_Material.specular, 1)));
-}
-```
-
-To calculate specular lighting, we will first set the specular color to black. If the diffuse factor is not 0, then we will calculate the camera vector by subtracting the fragment position from the camera position and normalizing the result. Then we will calculate the sum of the light vector and camera vector and normalize the result to get the half vector. We can then calculate the specular factor as the dot product of the per-vertex normal and half vector. The specular factor should never be less than 0, so we need to use the `max` function to enforce that. Next we will raise the specular factor to the power indicated by the material `shininess` property to get the specular power value. we then multiply the light color by the specular power to get the specular color. And we also need to add the product of the specular color and the material `specular` property to the total light color.  
-
-We will also need to rewrite our `calcPointLighting` function so it calculates specular lighting as well:
-```glsl
-vec4 calcPointLighting(int lightIdx, vec3 normal, vec3 cameraPos) {
-    // Calculate light vector
-    vec3 lightVector = p3d_LightSource[lightIdx].position.xyz - fragPos;
-
-    // Calculate attenuation
-    float dist = length(lightVector);
-    float attenuation = 1 / (p3d_LightSource[lightIdx].constantAttenuation + 
-        p3d_LightSource[lightIdx].linearAttenuation * dist + 
-        p3d_LightSource[lightIdx].quadraticAttenuation * dist * dist);
-
-    // Normalize light vector
-    lightVector = normalize(lightVector);
-
-    // Calculate diffuse lighting
-    float nxDir = max(0, dot(normal, lightVector));
-    vec4 diffuse = p3d_LightSource[lightIdx].color * nxDir * attenuation;
-
-    // Calculate specular lighting
-    vec4 specular = vec4(0);
-
-    if(nxDir != 0) {
-        vec3 cameraVector = normalize(cameraPos - fragPos);
-        vec3 halfVector = normalize(lightVector + cameraVector);
-        float nxHalf = max(0, dot(normal, halfVector));
-        float specularPower = pow(nxHalf, p3d_Material.shininess);
-        specular = p3d_LightSource[lightIdx].color * specularPower * attenuation;
-    }
-
-    // Calculate total lighting
-    return (p3d_LightModel.ambient * p3d_Material.ambient + 
-        (diffuse * p3d_Material.diffuse) + 
-        (specular * vec4(p3d_Material.specular, 1)));
-}
-```
+To calculate the specular lighting we will need to extract the camera position from the view matrix. After we calculate our diffuse lighting, we will calculate the camera vector, calculate the half vector, calculate the specular power, and calculate the amount of specular lighting. Then we need to add the product of the specular lighting and its corresponding material property to the total lighting.
 
 The procedure here is mostly the same, but we must apply attenuation to the specular color as well before adding it to the total light color. If you run your code at this point, you will see a sphere with both diffuse and specular lighting:  
 ![full lighting](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/05-specular_lighting/screenshots/01-full_lighting.png?raw=true)  
