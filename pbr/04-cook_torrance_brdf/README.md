@@ -208,4 +208,4 @@ vec4 applyLighting(vec4 albedo) {
 ```
 
 If you run your code at this point, you should see proper shading and 2 specular highlights on the sphere:
-shaded sphere
+![shaded sphere](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/04-cook_torrance_brdf/screenshots/01-shaded_sphere.png?raw=true)
