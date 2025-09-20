@@ -1,0 +1,211 @@
+# Lesson 4: Cook-Torrance BRDF
+
+In the previous lesson we implemented ambient lighting for our sphere. Now we need to implement the rest of the PBR lighting. There are multiple PBR lighting algorithms we can use. To be PBR an algorithm must adhere to the following principles:
+1. the microfacet surface model
+2. energy conservation
+3. physically based BRDF
+
+The microfacet surface model describes a surface as a series of tiny mirrors called microfacets. If the surface is smooth, the microfacets are aligned in mostly the same direction and the light rays which reflect off the surface will be mostly parallel. If the surface is rough, the microfacets are aligned in different directions and the light rays which reflect will scatter in different directions.
+
+Energy conservation requires that the amount of outgoing light cannot exceed the amount of incoming light. Therefore the sum of the light absorbed by the surface and the light reflected off the surface cannot exceed the amount of light hitting the surface.
+
+A BRDF is a bidirectional reflectance distribution function. It takes the incoming light direction, outgoing light direction, the surface normal, and the roughness of the surface as parameters. Then it approximates how much each light ray contributes to the final reflected light of the surface. To be physically based, a BRDF must adhere to the energy conservation principle. In this tutorial we will be using Cook-Torrance BRDF.
+
+Cook-Torrance BRDF consists of 3 functions:
+1. normal distribution function
+2. geometry function
+3. fresnel function
+
+We will be using the Trowbridge-Reitz GGX normal distribution function, Smith's Schlick GGX geometry function, and the Fresnel-Schlick fresnel function.
+
+First we will need to rewrite our vertex shader so that it calculates the fragment position and surface normal in addition to the vertex position:
+```glsl
+#version 140
+
+in vec4 p3d_Vertex;
+in vec3 p3d_Normal;
+
+uniform mat4 p3d_ModelViewMatrix;
+uniform mat4 p3d_ModelViewProjectionMatrix;
+uniform mat3 p3d_NormalMatrix;
+
+out vec3 fragPos;
+out vec3 normal;
+
+
+void main() {
+    // Calculate position, fragment position, and normal
+    gl_Position = p3d_ModelViewProjectionMatrix * p3d_Vertex;
+    fragPos = vec3(p3d_ModelViewMatrix * p3d_Vertex);
+    normal = p3d_NormalMatrix * p3d_Normal;
+}
+```
+
+Next we need to add 2 input attributes called `fragPos` and `normal` to our fragment shader:
+```glsl
+in vec3 fragPos;
+in vec3 normal;
+```
+
+Then we need to update the uniforms for our fragment shader like this:
+```glsl
+uniform mat4 p3d_ViewMatrix;
+uniform struct p3d_LightModelParameters {
+    vec4 ambient;
+} p3d_LightModel;
+uniform struct p3d_LightSourceParameters {
+    // Primary light color.
+    vec4 color;
+
+    // Light color broken up into components, for compatibility with legacy
+    // shaders. These are now deprecated.
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+
+    // View-space position. If w=0, this is a directional light, with the xyz
+    // being -direction.
+    vec4 position;
+
+    // Spotlight-only settings
+    vec3 spotDirection;
+    float spotExponent;
+    float spotCutoff;
+    float spotCosCutoff;
+
+    // Individual attenuation constants
+    float constantAttenuation;
+    float linearAttenuation;
+    float quadraticAttenuation;
+
+    // constant, linear, quadratic attenuation in one vector
+    vec3 attenuation;
+
+    // Shadow map for this light source
+    sampler2DShadow shadowMap;
+
+    // Transforms view-space coordinates to shadow map coordinates
+    mat4 shadowViewMatrix;
+} p3d_LightSource[2];
+uniform struct p3d_MaterialParameters {
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 emission;
+    vec3 specular;
+    float shininess;
+    
+    vec4 baseColor;
+    float roughness;
+    float metallic;
+    float refractiveIndex;
+} p3d_Material;
+```
+
+We also need to define pi as a constant:
+```glsl
+const float PI = 3.14159265359;
+```
+
+Next we need to add the functions used by the BRDF function:
+```glsl
+float distributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+
+    float num = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+    return num / denom;
+}
+
+
+float geometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+
+    float num = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return num / denom;
+}
+
+
+float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = geometrySchlickGGX(NdotV, roughness);
+    float ggx1 = geometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+```
+
+And now we can update our lighting function like this:
+```glsl
+vec4 applyLighting(vec4 albedo) {
+    // Normalize normal and extract camera position from view matrix
+    vec3 norm = normalize(normal);
+    vec3 cameraPos = p3d_ViewMatrix[3].xyz;
+
+    // Calculate total radiance
+    vec3 Lo = vec3(0.0);
+
+    for(int i = 0; i < p3d_LightSource.length(); i++) {
+        // Calculate view vector
+        vec3 V = normalize(cameraPos - fragPos);
+
+        // Initialize
+        vec3 F0 = vec3(.04);
+        F0 = mix(F0, albedo.rgb, p3d_Material.metallic);
+
+        // Calculate per-light radiance
+        vec3 lightDir = p3d_LightSource[i].position.xyz - fragPos * 
+            p3d_LightSource[i].position.w;
+        vec3 L = normalize(lightDir);
+        vec3 H = normalize(V + L);
+        float dist = length(lightDir);
+        vec3 atten = p3d_LightSource[i].attenuation;
+        float attenuation = 1.0 / (atten.x + atten.y * dist + 
+            atten.z * dist * dist);
+        vec3 radiance = p3d_LightSource[i].color.rgb * attenuation;
+
+        // Cook-Torrance BRDF
+        float NDF = distributionGGX(norm, H, p3d_Material.roughness);
+        float G = geometrySmith(norm, V, L, p3d_Material.roughness);
+        vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+        vec3 kS = F;
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - p3d_Material.metallic;
+
+        vec3 num = NDF * G * F;
+        float denom = 4.0 * max(dot(norm, V), 0.0) * max(dot(norm, L), 0.0) + 
+            .0001;
+        vec3 specular = num / denom;
+
+        // Add to outgoing radiance Lo
+        float NdotL = max(dot(normal, L), 0.0);
+        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
+
+        // Add emission
+        Lo += p3d_Material.emission.rgb;
+    }
+
+    // Apply lighting to initial color
+    vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb * 
+        p3d_Material.refractiveIndex;
+    vec3 color = ambient + Lo;
+    color = color / (color + vec3(1.0));
+    return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
+}
+```
+
+If you run your code at this point, you should see proper shading and 2 specular highlights on the sphere:
+shaded sphere
