@@ -1,4 +1,4 @@
-# Lesson 7: Fog
+# Lesson 6: Fog
 
 In this lesson, we will be exploring fog. Fog can be used to make a scene look foggy, but it can also be used for underwater effects and more. The first thing we need to do is modify our imports in `main.py`:
 ```python

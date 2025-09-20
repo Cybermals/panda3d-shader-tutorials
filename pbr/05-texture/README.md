@@ -1,4 +1,4 @@
-# Lesson 6: Texture
+# Lesson 5: Texture
 
 Now that we have all lighting types implemented, let's add the UV color grid texture to our sphere. The texture is actually already loaded and assigned to the sphere, however we must modify our shaders so that the texture gets applied to the surface of the sphere. The first thing we must do is modify our vertex shader so that it passes the texture coordinates to the fragment shader. We will need an additional input attribute called `p3d_MultiTexCoord0` that will receive the texture coordinate:
 ```glsl
