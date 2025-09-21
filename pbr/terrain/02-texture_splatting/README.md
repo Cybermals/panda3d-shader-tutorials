@@ -312,6 +312,13 @@ stage0.set_texcoord_name("0")
 self.terrain.set_texture(stage0, self.grass_tex)
 ```
 
+The name of the texture coordinate may vary depending on the exporter used to create the mesh. If in doubt you can print out the names of the texture coordinates by temporarily adding the following line:
+```python
+print(self.terrain.find_all_texcoords())
+```
+
+Texture coordinate names are prefixed with "texcoord.". So you need to read only the part after the prefix.
+
 If you run your code at this point, you will see a texture on the terrain like this:  
 ![basic texture](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/02-texture_splatting/screenshots/01-basic_texture.png?raw=true)
 
