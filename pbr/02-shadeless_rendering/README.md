@@ -8,6 +8,7 @@ The role of the vertex shader is to transform vertex positions from local space 
 ```
 project/
     meshes/
+        FancySphere.gltf
         Sphere.gltf
     shaders/
     main.py

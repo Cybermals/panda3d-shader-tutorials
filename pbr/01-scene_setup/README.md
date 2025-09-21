@@ -38,6 +38,7 @@ After you have downloaded the sphere mesh, unzip it and place it into your proje
 ```
 project/
     meshes/
+        FancySphere.gltf
         Sphere.gltf
     main.py
 ```
