@@ -52,7 +52,7 @@ from panda3d.core import (
 import simplepbr
 ```
 
-Then add the following lines about where you load the terrain mesh:
+Then add the following lines above where you load the terrain mesh:
 ```python
 # Init shaders
 simplepbr.init()
