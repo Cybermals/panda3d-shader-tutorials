@@ -91,4 +91,4 @@ void main() {
 ```
 
 Making these changes will cause the fragment shader to obtain the metallic, emission, and roughness values from the MER map. If you run your code at this point you should see this:
-mer map
+![mer map](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/07-mer_map/screenshots/01-mer_map.png?raw=true)
