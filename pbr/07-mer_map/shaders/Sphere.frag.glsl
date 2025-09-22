@@ -180,9 +180,15 @@ vec4 applyFog(vec4 color) {
 }
 
 
+vec4 srgbToLinear(vec4 color) {
+    return vec4(pow(color.rgb, vec3(2.2)), color.a);
+}
+
+
 void main() {
     // Calculate base color, metallic, emission, and roughness
     vec4 baseColor = texture(p3d_Texture0, uv);
+    baseColor = srgbToLinear(baseColor);
     vec4 mer = texture(p3d_Texture1, uv);
     float metallic = mer.r;
     float emission = mer.g;
