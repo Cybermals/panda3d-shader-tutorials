@@ -213,9 +213,15 @@ vec4 applyFog(vec4 color) {
 }
 
 
+vec4 srgbToLinear(vec4 color) {
+    return vec4(pow(color.rgb, vec3(2.2)), color.a);
+}
+
+
 void main() {
     // Calculate base color
     vec4 baseColor = texture(p3d_Texture0, uv);
+    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));
@@ -331,6 +337,7 @@ And we also need to divide our UV coordinate by the scale before sampling the te
 ```glsl
 // Calculate base color
 vec4 baseColor = texture(p3d_Texture0, uv / texScale0);
+baseColor = srgbToLinear(baseColor);
 ```
 
 We also need to pass the scale into our shader. First modify your imports like this:
@@ -460,11 +467,12 @@ Once we have sampled those textures, we will sample the mask as well. However, w
 vec4 mask0 = texture(p3d_Texture4, uv);
 ```
 
-And now we can use each color channel of the mask to determine how to blend the other 4 textures:
+And now we can use each color channel of the mask to determine how to blend the other 4 textures. Be sure to convert to linear color space after mixing the layers:
 ```glsl
 baseColor = mix(baseColor, layer1, mask0.r);
 baseColor = mix(baseColor, layer2, mask0.g);
 baseColor = mix(baseColor, layer3, mask0.b);
+baseColor = srgbToLinear(baseColor);
 ```
 
 The idea is that black represents the base texture. In this case our base texure is grass. Red represents the layer 1 texure which is dirt in this case. Green represents the layer 2 texture which is rock in this case. And blue represents the layer 3 texture which is blank in this case. If you run your code now, you will see that the terrain now has grass, dirt, and rock:  
