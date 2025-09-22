@@ -79,4 +79,4 @@ load_prc_file("settings.prc")
 ```
 
 Now the sphere should look like this:
-srgb framebuffer
+![srgb framebuffer](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/03-ambient_lighting/screenshots/02-srgb_framebuffer.png?raw=true)
