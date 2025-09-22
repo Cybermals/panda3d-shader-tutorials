@@ -29,9 +29,15 @@ vec4 applyLighting(vec4 albedo) {
 }
 
 
+vec4 srgbToLinear(vec4 color) {
+    return vec4(pow(color.rgb, vec3(2.2)), color.a);
+}
+
+
 void main() {
     // Calculate base color
     vec4 baseColor = vec4(0.0, .225, .8, 1.0);
+    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyLighting(baseColor);

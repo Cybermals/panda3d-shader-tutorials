@@ -2,6 +2,7 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import (
     AmbientLight,
     DirectionalLight,
+    load_prc_file,
     PointLight,
     Shader,
     Vec3,
@@ -13,6 +14,9 @@ from panda3d.core import (
 # =================
 class ShaderDemo(ShowBase):
     def __init__(self):
+        # Load config file
+        load_prc_file("settings.prc")
+
         # Call the base constructor
         ShowBase.__init__(self)
 
@@ -25,7 +29,7 @@ class ShaderDemo(ShowBase):
 
         # Setup lighting
         self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
-        self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
+        self.ambient_light.node().set_color(Vec4(.04, .04, .04, 1))
         self.render.set_light(self.ambient_light)
 
         self.sun = self.render.attach_new_node(DirectionalLight("Sun"))
