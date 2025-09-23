@@ -31,7 +31,6 @@ The only other thing we need to do now is rewrite our `main` function so that it
 void main() {
     // Calculate base color
     vec4 baseColor = texture(p3d_Texture0, uv);
-    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyLighting(baseColor);
