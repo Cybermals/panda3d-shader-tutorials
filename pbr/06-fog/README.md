@@ -57,7 +57,6 @@ To apply fog to each fragment, we also need to rewrite our `main` function like 
 void main() {
     // Calculate base color
     vec4 baseColor = texture(p3d_Texture0, uv);
-    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));

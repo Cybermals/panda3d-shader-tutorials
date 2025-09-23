@@ -160,7 +160,7 @@ vec4 applyLighting(vec4 albedo) {
     vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb;
     vec3 color = ambient + Lo;
     color = color / (color + vec3(1.0));
-    return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
+    return vec4(color, albedo.a);
 }
 
 
@@ -178,15 +178,9 @@ vec4 applyFog(vec4 color) {
 }
 
 
-vec4 srgbToLinear(vec4 color) {
-    return vec4(pow(color.rgb, vec3(2.2)), color.a);
-}
-
-
 void main() {
     // Calculate base color
     vec4 baseColor = texture(p3d_Texture0, uv);
-    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));
