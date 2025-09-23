@@ -23,8 +23,7 @@ uniform struct p3d_MaterialParameters {
 ```glsl
 vec4 applyLighting(vec4 albedo) {
     // Apply lighting to initial color
-    vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb * 
-        p3d_Material.refractiveIndex;
+    vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb;
     vec3 color = ambient;
     color = color / (color + vec3(1.0));
     return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
