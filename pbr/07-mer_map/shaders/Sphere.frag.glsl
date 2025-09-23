@@ -117,7 +117,7 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission,
     // Calculate view vector
     vec3 V = normalize(cameraPos - fragPos);
 
-    // Initialize
+    // Calculate base reflectivity
     vec3 F0 = vec3(.04);
     F0 = mix(F0, albedo.rgb, metallic);
 
