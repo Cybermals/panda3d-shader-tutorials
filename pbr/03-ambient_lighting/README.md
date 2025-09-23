@@ -26,23 +26,15 @@ vec4 applyLighting(vec4 albedo) {
     vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb;
     vec3 color = ambient;
     color = color / (color + vec3(1.0));
-    return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
+    return vec4(color, albedo.a);
 }
 ```
 
-This function calculates the product of the ambient light color, the base color (aka. albedo), and the material refractive index. Then it assigns it to a `color` variable which will later be replaced with a different formula. Next it applies tone mapping and gamma correction. This step is necessary because PBR shaders perform calculations in linear space. Since PBR lighting calculations require colors to be in linear space, we will also need a function that converts from sRGB to linear color space:
-```glsl
-vec4 srgbToLinear(vec4 color) {
-    return vec4(pow(color.rgb, vec3(2.2)), color.a);
-}
-```
-
-We also need to modify our `main` function to convert the base color to linear color space and use our new lighting function:
+This function calculates the product of the ambient light color and the base color (aka. albedo). Then it assigns it to a `color` variable which will later be replaced with a different formula. Next it applies tone mapping. We also need to modify our `main` function to use our new lighting function:
 ```glsl
 void main() {
     // Calculate base color
     vec4 baseColor = vec4(0.0, .225, .8, 1.0);
-    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyLighting(baseColor);
