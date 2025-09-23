@@ -143,20 +143,20 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 
 vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness) {
     // Normalize normal and extract camera position from view matrix
-    vec3 norm = normalize(normal);
+    vec3 N = normalize(normal);
     vec3 cameraPos = p3d_ViewMatrix[3].xyz;
+
+    // Calculate view vector
+    vec3 V = normalize(cameraPos - fragPos);
+
+    // Initialize
+    vec3 F0 = vec3(.04);
+    F0 = mix(F0, albedo.rgb, metallic);
 
     // Calculate total radiance
     vec3 Lo = vec3(0.0);
 
     for(int i = 0; i < p3d_LightSource.length(); i++) {
-        // Calculate view vector
-        vec3 V = normalize(cameraPos - fragPos);
-
-        // Initialize
-        vec3 F0 = vec3(.04);
-        F0 = mix(F0, albedo.rgb, metallic);
-
         // Calculate per-light radiance
         vec3 lightDir = p3d_LightSource[i].position.xyz - fragPos * 
             p3d_LightSource[i].position.w;
@@ -169,8 +169,8 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         vec3 radiance = p3d_LightSource[i].color.rgb * attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = distributionGGX(norm, H, roughness);
-        float G = geometrySmith(norm, V, L, roughness);
+        float NDF = distributionGGX(N, H, roughness);
+        float G = geometrySmith(N, V, L, roughness);
         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         vec3 kS = F;
@@ -178,12 +178,12 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         kD *= 1.0 - metallic;
 
         vec3 num = NDF * G * F;
-        float denom = 4.0 * max(dot(norm, V), 0.0) * max(dot(norm, L), 0.0) + 
+        float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 
             .0001;
         vec3 specular = num / denom;
 
         // Add to outgoing radiance Lo
-        float NdotL = max(dot(normal, L), 0.0);
+        float NdotL = max(dot(N, L), 0.0);
         Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
 
         // Add emission
@@ -195,7 +195,7 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         p3d_Material.refractiveIndex;
     vec3 color = ambient + Lo;
     color = color / (color + vec3(1.0));
-    return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
+    return vec4(color, albedo.a);
 }
 
 
@@ -213,15 +213,9 @@ vec4 applyFog(vec4 color) {
 }
 
 
-vec4 srgbToLinear(vec4 color) {
-    return vec4(pow(color.rgb, vec3(2.2)), color.a);
-}
-
-
 void main() {
     // Calculate base color
     vec4 baseColor = texture(p3d_Texture0, uv);
-    baseColor = srgbToLinear(baseColor);
 
     // Calculate final color
     p3d_FragColor = applyFog(applyLighting(baseColor));
@@ -337,7 +331,6 @@ And we also need to divide our UV coordinate by the scale before sampling the te
 ```glsl
 // Calculate base color
 vec4 baseColor = texture(p3d_Texture0, uv / texScale0);
-baseColor = srgbToLinear(baseColor);
 ```
 
 We also need to pass the scale into our shader. First modify your imports like this:
@@ -467,12 +460,11 @@ Once we have sampled those textures, we will sample the mask as well. However, w
 vec4 mask0 = texture(p3d_Texture4, uv);
 ```
 
-And now we can use each color channel of the mask to determine how to blend the other 4 textures. Be sure to convert to linear color space after mixing the layers:
+And now we can use each color channel of the mask to determine how to blend the other 4 textures:
 ```glsl
 baseColor = mix(baseColor, layer1, mask0.r);
 baseColor = mix(baseColor, layer2, mask0.g);
 baseColor = mix(baseColor, layer3, mask0.b);
-baseColor = srgbToLinear(baseColor);
 ```
 
 The idea is that black represents the base texture. In this case our base texure is grass. Red represents the layer 1 texure which is dirt in this case. Green represents the layer 2 texture which is rock in this case. And blue represents the layer 3 texture which is blank in this case. If you run your code now, you will see that the terrain now has grass, dirt, and rock:  

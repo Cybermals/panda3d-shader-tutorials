@@ -117,20 +117,20 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 
 vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness) {
     // Normalize normal and extract camera position from view matrix
-    vec3 norm = normalize(normal);
+    vec3 N = normalize(normal);
     vec3 cameraPos = p3d_ViewMatrix[3].xyz;
+
+    // Calculate view vector
+    vec3 V = normalize(cameraPos - fragPos);
+
+    // Initialize
+    vec3 F0 = vec3(.04);
+    F0 = mix(F0, albedo.rgb, metallic);
 
     // Calculate total radiance
     vec3 Lo = vec3(0.0);
 
     for(int i = 0; i < p3d_LightSource.length(); i++) {
-        // Calculate view vector
-        vec3 V = normalize(cameraPos - fragPos);
-
-        // Initialize
-        vec3 F0 = vec3(.04);
-        F0 = mix(F0, albedo.rgb, metallic);
-
         // Calculate per-light radiance
         vec3 lightDir = p3d_LightSource[i].position.xyz - fragPos * 
             p3d_LightSource[i].position.w;
@@ -143,8 +143,8 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         vec3 radiance = p3d_LightSource[i].color.rgb * attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = distributionGGX(norm, H, roughness);
-        float G = geometrySmith(norm, V, L, roughness);
+        float NDF = distributionGGX(N, H, roughness);
+        float G = geometrySmith(N, V, L, roughness);
         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         vec3 kS = F;
@@ -152,12 +152,12 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         kD *= 1.0 - metallic;
 
         vec3 num = NDF * G * F;
-        float denom = 4.0 * max(dot(norm, V), 0.0) * max(dot(norm, L), 0.0) + 
+        float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 
             .0001;
         vec3 specular = num / denom;
 
         // Add to outgoing radiance Lo
-        float NdotL = max(dot(normal, L), 0.0);
+        float NdotL = max(dot(N, L), 0.0);
         Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
 
         // Add emission
@@ -169,7 +169,7 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         p3d_Material.refractiveIndex;
     vec3 color = ambient + Lo;
     color = color / (color + vec3(1.0));
-    return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
+    return vec4(color, albedo.a);
 }
 
 
@@ -187,11 +187,6 @@ vec4 applyFog(vec4 color) {
 }
 
 
-vec4 srgbToLinear(vec4 color) {
-    return vec4(pow(color.rgb, vec3(2.2)), color.a);
-}
-
-
 void main() {
     // Calculate base color, metallic, emission, and roughness
     vec4 baseColor = texture(p3d_Texture0, uv / texScale0);
@@ -202,7 +197,6 @@ void main() {
     baseColor = mix(baseColor, layer1, mask0.r);
     baseColor = mix(baseColor, layer2, mask0.g);
     baseColor = mix(baseColor, layer3, mask0.b);
-    baseColor = srgbToLinear(baseColor);
     float metallic = p3d_Material.metallic;
     float emission = 0.0;
     float roughness = p3d_Material.roughness;
