@@ -16,22 +16,23 @@ uniform sampler2D p3d_Texture1;
 
 Then modify your lighting function like this:
 ```glsl
-vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness) {
+vec4 applyLighting(vec4 albedo, float metallic, float emission, 
+    float roughness) {
     // Normalize normal and extract camera position from view matrix
-    vec3 norm = normalize(normal);
+    vec3 N = normalize(normal);
     vec3 cameraPos = p3d_ViewMatrix[3].xyz;
+
+    // Calculate view vector
+    vec3 V = normalize(cameraPos - fragPos);
+
+    // Initialize
+    vec3 F0 = vec3(.04);
+    F0 = mix(F0, albedo.rgb, metallic);
 
     // Calculate total radiance
     vec3 Lo = vec3(0.0);
 
     for(int i = 0; i < p3d_LightSource.length(); i++) {
-        // Calculate view vector
-        vec3 V = normalize(cameraPos - fragPos);
-
-        // Initialize
-        vec3 F0 = vec3(.04);
-        F0 = mix(F0, albedo.rgb, metallic);
-
         // Calculate per-light radiance
         vec3 lightDir = p3d_LightSource[i].position.xyz - fragPos * 
             p3d_LightSource[i].position.w;
@@ -44,8 +45,8 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         vec3 radiance = p3d_LightSource[i].color.rgb * attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = distributionGGX(norm, H, roughness);
-        float G = geometrySmith(norm, V, L, roughness);
+        float NDF = distributionGGX(N, H, roughness);
+        float G = geometrySmith(N, V, L, roughness);
         vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         vec3 kS = F;
@@ -53,21 +54,20 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission, float roughness)
         kD *= 1.0 - metallic;
 
         vec3 num = NDF * G * F;
-        float denom = 4.0 * max(dot(norm, V), 0.0) * max(dot(norm, L), 0.0) + 
+        float denom = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 
             .0001;
         vec3 specular = num / denom;
 
         // Add to outgoing radiance Lo
-        float NdotL = max(dot(normal, L), 0.0);
+        float NdotL = max(dot(N, L), 0.0);
         Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
 
         // Add emission
-        Lo += p3d_Material.emission.rgb * emission;
+        Lo += p3d_Material.emission.rgb;
     }
 
     // Apply lighting to initial color
-    vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb * 
-        p3d_Material.refractiveIndex;
+    vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb;
     vec3 color = ambient + Lo;
     color = color / (color + vec3(1.0));
     return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
