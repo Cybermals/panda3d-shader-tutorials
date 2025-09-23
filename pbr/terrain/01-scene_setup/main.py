@@ -19,7 +19,7 @@ class TerrainDemo(ShowBase):
 
         # Setup lighting
         self.ambient_light = self.render.attach_new_node(AmbientLight("AmbientLight"))
-        self.ambient_light.node().set_color(Vec4(.04, .04, .04, 1))
+        self.ambient_light.node().set_color(Vec4(.2, .2, .2, 1))
         self.render.set_light(self.ambient_light)
 
         self.sun = self.render.attach_new_node(DirectionalLight("Sun"))
