@@ -70,7 +70,7 @@ vec4 applyLighting(vec4 albedo, float metallic, float emission,
     vec3 ambient = p3d_LightModel.ambient.rgb * albedo.rgb;
     vec3 color = ambient + Lo;
     color = color / (color + vec3(1.0));
-    return vec4(pow(color, vec3(1.0 / 2.2)), albedo.a);
+    return vec4(color, albedo.a);
 }
 ```
 
@@ -79,7 +79,6 @@ And rewrite your main function like this:
 void main() {
     // Calculate base color, metallic, emission, and roughness
     vec4 baseColor = texture(p3d_Texture0, uv);
-    baseColor = srgbToLinear(baseColor);
     vec4 mer = texture(p3d_Texture1, uv);
     float metallic = mer.r;
     float emission = mer.g;
@@ -91,5 +90,5 @@ void main() {
 }
 ```
 
-Only the base color should be converted to linear color space. Making these changes will cause the fragment shader to obtain the metallic, emission, and roughness values from the MER map. If you run your code at this point you should see this:
+Making these changes will cause the fragment shader to obtain the metallic, emission, and roughness values from the MER map. If you run your code at this point you should see this:
 ![mer map](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/07-mer_map/screenshots/01-mer_map.png?raw=true)
