@@ -179,7 +179,7 @@ vec4 applyFog(vec4 color) {
 
 void main() {
     // Calculate base color, metallic, emission, and roughness
-    vec4 baseColor = vec4(1, 1, 1, 1);
+    vec4 baseColor = p3d_Material.baseColor;
     float metallic = p3d_Material.metallic;
     float emission = 0.0;
     float roughness = p3d_Material.roughness;
