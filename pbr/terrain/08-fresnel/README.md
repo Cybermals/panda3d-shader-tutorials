@@ -38,4 +38,4 @@ baseColor = mix(baseColor, vec4(0, .225, .5, 1), .2);
 ```
 
 Notice that now we are using the refract factor instead of mixing the reflection and refraction colors equally. And If you look down at the water from a more perpendicular angle, you will see less reflections:  
-![fresnel](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/legacy/terrain/08-fresnel/screenshots/01-fresnel.png?raw=true)
+![fresnel](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/08-fresnel/screenshots/01-fresnel.png?raw=true)
