@@ -1,7 +1,7 @@
 # Lesson 1: Static Skybox
 
 In this tutorial series, I will be teaching how to render various types of skies. The first type of sky we will be learning about is a simple skybox. This is one of the most simple skies you can make. It works by rendering a cube with a cubemap sky texture applied to it. However, we also need the cube to follow the camera. But just the camera's position. Not its rotation. First, download the images we will need for this tutorial:
-*placeholder*
+[https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/shadeless/sky/images.zip](https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/shadeless/sky/images.zip)
 
 Unzip the downloaded archive and you should have the following project structure:
 ```
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 ```
 
 All we have to do is load our cubemap texture, set its min and mag filters to linear mipmap linear, and create our skybox. When loading a cubemap texture you must place a "#" in the path where the image number should be. If we run our code at this point, we should see this:
-*screenshot*
+![skybox](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/01-static_skybox/screenshots/01-static_skybox.png?raw=true)
 
 If you rotate the camera by holding Alt and dragging, you can see more of the skybox:
-*screenshot*
+![skybox](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/01-static_skybox/screenshots/02-static_skybox.png?raw=true)
