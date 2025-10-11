@@ -46,10 +46,10 @@ framebuffer-srgb 1
 ```
 
 If you run your code at this point, you should see this:
-*screenshot*
+![sky background](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/02-static_skydome/screenshots/01-window_background.png?raw=true)
 
 Since a dome is a more complex shape than a cube, we will be using a skydome mesh which I have already prepared. Download the following mesh archive:
-*link*
+[https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/shadeless/sky/meshes.zip](https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/shadeless/sky/meshes.zip)
 
 Next unzip the archive. You should have a project structure like this:
 ```
@@ -121,4 +121,5 @@ class SkyDome(object):
 ```
 
 Here we load the sky shader once, load the skydome mesh, set the bounds for the skydome to an omnidirectional bounding volume, set the shader, set the depth test to less than or equal to, and reparent the skydome mesh to the root of the scenegraph. This will cause the skydome to follow the camera position and always be visible. If you run your code at this point, you should notice a subtle gradient between the horizon and zenith:
-*screenshot*
+![skydome](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/02-static_skydome/screenshots/02-static_skydome.png?raw=true)
+![skydome](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/02-static_skydome/screenshots/03-static_skydome.png?raw=true)
