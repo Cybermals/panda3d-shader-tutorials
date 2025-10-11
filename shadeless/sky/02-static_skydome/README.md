@@ -55,6 +55,7 @@ Next unzip the archive. You should have a project structure like this:
 ```
 project/
     meshes/
+        DynamicSkyDome.gltf
         SkyDome.gltf
 ```
 
