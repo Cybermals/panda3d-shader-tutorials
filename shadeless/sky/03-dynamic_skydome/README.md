@@ -72,7 +72,8 @@ self.skydome = SkyDome(
 ```
 
 If you run your code at this point it should look like this:
-*screenshot*
+![skydome](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/03-dynamic_skydome/screenshots/01-dynamic_skydome.png?raw=true)
+![skydome](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/03-dynamic_skydome/screenshots/02-dynamic_skydome.png?raw=true)
 
 With a dynamic sky system like this, we are able to transition the sky color based on time of day or even weather. However, there are other effects we can achieve as well. For example, we can also add clouds that move across the sky. To add clouds, we first need to modify our fragment shader like this:
 ```glsl
@@ -203,7 +204,8 @@ if __name__ == "__main__":
 ```
 
 If you run your code at this point, you should see clouds which slowly scroll from east to west:
-*screenshot*
+![clouds](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/03-dynamic_skydome/screenshots/03-clouds.png?raw=true)
+![clouds](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/03-dynamic_skydome/screenshots/04-clouds.png?raw=true)
 
 Sometimes we don't want clouds in the sky though. To achieve this, simply use a fully transparent cloud texture. Now that we have clouds, let's also add a sun and moon. For simplicity, we will put the sun and moon on a single texture for celestial bodies. We will need to modify our fragment shader like this:
 ```glsl
@@ -355,4 +357,5 @@ if __name__ == "__main__":
 ```
 
 If you run your code at this point, you should see the sun and moon move slowly across the sky. Only one should be visible at a time:
-*screenshot*
+![sun](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/03-dynamic_skydome/screenshots/05-sun.png?raw=true)
+![moon](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/shadeless/sky/03-dynamic_skydome/screenshots/06-moon.png?raw=true)
