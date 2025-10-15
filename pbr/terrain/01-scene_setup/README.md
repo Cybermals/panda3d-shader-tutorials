@@ -20,7 +20,7 @@ if __name__ == "__main__":
 ```
 
 Now we need to load some terrain to test our shaders on. For this tutorial series we will generate our terrain from a grayscale heightmap image. First, download the following zip file:
-*link*
+[https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/pbr/terrain/images.zip](https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/pbr/terrain/images.zip)
 
 Then unpack the zip file so your project structure looks like:
 ```
@@ -69,7 +69,7 @@ self.terrain.get_root().reparent_to(self.render)
 The `GeoMipTerrain` class generates terrain from a grayscale heightmap image loaded via the `set_heightmap` method. It will generate equal sized blocks of terrain based on the block size we set. Larger block sizes yield less meshes, but increase the time needed to build the mesh for each block. Blocks closest to the focal point will have the highest level of detail (LOD). We can call the `get_root` method to get the nodepath which the terrain blocks are parented to. Set the scale of the terrain root to control the size of the terrain. The Z scale determines the maximum height of the terrain. The origin of the terrain is in the lower left corner at the lowest elevation. So you may want to set the position of the terrain root as well. We also need to set the material for the terrain. Make sure you call the `generate` method of the terrain and reparent the terrain root to the root of the scene graph or you won't see anything.
 
 If you run your code at this point, you will see a solid white mass:
-*screenshot*
+![shadeless terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/01-scene_setup/screenshots/01-shadeless_terrain.png?raw=true)
 
 Let's improve the appearance of our terrain by initializing `panda3d-simplepbr` and setting up some basic lighting. Modify your imports like this:
 ```python
@@ -103,7 +103,7 @@ Now if you run your code, you should be able to see the terrain contour better:
 ![shaded terrain](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/01-scene_setup/screenshots/02-shaded_terrain.png?raw=true)
 
 However, if you move the camera around with the mouse you will notice that the terrain detail remains low on the opposite side of the terrain:
-*screenshot*
+![static terrain lod](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/01-scene_setup/screenshots/03-static_lod.png?raw=true)
 
 To fix this, we need to enable dynamic LOD by creating a task which calls the `update` method of the terrain. Add the following method to your showbase class:
 ```python
@@ -120,6 +120,6 @@ self.task_mgr.add(self.update, "update")
 ```
 
 If you run your code now, you should see the terrain detail change as you move the camera around:
-*screenshot*
+![dynamic terrain lod](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/01-scene_setup/screenshots/04-dynamic_lod.png?raw=true)
 
 However, our terrain still has no texture at this point. We could simply apply a single texture to the terrain surface, but doing so would limit what we could do with our terrain. However, there is a technique we can use to use multiple textures on the same terrain to achieve a high quality for our terrain appearance.
