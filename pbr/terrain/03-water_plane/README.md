@@ -77,7 +77,9 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import (
     AmbientLight,
     DirectionalLight,
+    GeoMipTerrain,
     load_prc_file,
+    Material,
     SamplerState,
     Shader,
     TextureStage,
@@ -98,5 +100,5 @@ self.water = WaterPlane(
 )
 ```
 
-If you run your code at this point, you should see a grey plane across the depression in the center of the terrain:  
+If you run your code at this point, you should see a white plane across the depression in the center of the terrain:  
 ![water plane](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/03-water_plane/screenshots/01-water_plane.png?raw=true)
