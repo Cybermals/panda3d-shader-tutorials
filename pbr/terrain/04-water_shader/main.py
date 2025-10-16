@@ -2,7 +2,9 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import (
     AmbientLight,
     DirectionalLight,
+    GeoMipTerrain,
     load_prc_file,
+    Material,
     SamplerState,
     Shader,
     TextureStage,
@@ -40,6 +42,14 @@ class TerrainDemo(ShowBase):
         self.sun.set_hpr(45, -45, 0)
         self.render.set_light(self.sun)
 
+        # Create materials
+        terrain_mat = Material("Terrain")
+        terrain_mat.set_base_color(Vec4(0, .5, 0, 1))
+        terrain_mat.set_metallic(0)
+        terrain_mat.set_emission(Vec4(0, 0, 0, 1))
+        terrain_mat.set_roughness(.8)
+        terrain_mat.set_refractive_index(1.5)
+
         # Load textures
         self.grass_tex = self.loader.load_texture("images/Grass.png")
         self.grass_tex.minfilter = SamplerState.FT_linear_mipmap_linear
@@ -62,36 +72,49 @@ class TerrainDemo(ShowBase):
         self.color_mask_tex.magfilter = SamplerState.FT_linear_mipmap_linear
 
         # Load terrain
-        self.terrain = self.loader.load_model("meshes/Terrain.gltf")
-        self.terrain.set_scale(256, 256, 256)
-        self.terrain.set_pos(0, 261, 0)
+        self.terrain = GeoMipTerrain("Terrain")
+        self.terrain.set_heightfield("images/Heightmap.png")
+        self.terrain.set_block_size(32)
+        self.terrain.set_focal_point(self.camera)
 
-        self.terrain.set_shader(self.terrain_shader)
-        self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
-        self.terrain.set_shader_input("texScale1", Vec2(.1, .1))
-        self.terrain.set_shader_input("texScale2", Vec2(.1, .1))
-        self.terrain.set_shader_input("texScale3", Vec2(.1, .1))
+        self.terrain.get_root().set_sz(128)
+        self.terrain.get_root().set_pos(-256, 0, -64)
+        self.terrain.get_root().set_material(terrain_mat)
+
+        self.terrain.get_root().set_shader(self.terrain_shader)
+        self.terrain.get_root().set_shader_input("texScale0", Vec2(.1, .1))
+        self.terrain.get_root().set_shader_input("texScale1", Vec2(.1, .1))
+        self.terrain.get_root().set_shader_input("texScale2", Vec2(.1, .1))
+        self.terrain.get_root().set_shader_input("texScale3", Vec2(.1, .1))
 
         stage0 = TextureStage("Grass")
-        stage0.set_texcoord_name("0")
         stage1 = TextureStage("Dirt")
         stage2 = TextureStage("Rock")
         stage3 = TextureStage("Blank")
         stage4 = TextureStage("ColorMask")
 
-        self.terrain.set_texture(stage0, self.grass_tex)
-        self.terrain.set_texture(stage1, self.dirt_tex)
-        self.terrain.set_texture(stage2, self.rock_tex)
-        self.terrain.set_texture(stage3, self.blank_tex)
-        self.terrain.set_texture(stage4, self.color_mask_tex)
+        self.terrain.get_root().set_texture(stage0, self.grass_tex)
+        self.terrain.get_root().set_texture(stage1, self.dirt_tex)
+        self.terrain.get_root().set_texture(stage2, self.rock_tex)
+        self.terrain.get_root().set_texture(stage3, self.blank_tex)
+        self.terrain.get_root().set_texture(stage4, self.color_mask_tex)
 
-        self.terrain.reparent_to(self.render)
+        self.terrain.generate()
+        self.terrain.get_root().reparent_to(self.render)
 
         # Load water plane
         self.water = WaterPlane(
             Vec3(0, 261, -20),
             scale=Vec3(256, 256, 1)
         )
+
+        # Add update task
+        self.task_mgr.add(self.update, "update")
+
+    def update(self, task):
+        # Update terrain
+        self.terrain.update()
+        return task.cont
 
 
 # Entry Point
