@@ -214,19 +214,31 @@ vec4 applyFog(vec4 color) {
 
 
 void main() {
-    // Calculate base color
+    // Calculate base color, metallic, emission, and roughness
     vec4 baseColor = texture(p3d_Texture0, uv);
+    float metallic = p3d_Material.metallic;
+    float emission = 0.0;
+    float roughness = p3d_Material.roughness;
 
     // Calculate final color
-    p3d_FragColor = applyFog(applyLighting(baseColor));
+    p3d_FragColor = applyFog(applyLighting(baseColor, metallic, emission,
+        roughness));
 }
 ```
 
 Now your folder heirarchy should look like this:
 ```
 project/
-    meshes/
-        Terrain.gltf
+    images/
+        Blank.png
+        ColorMask.png
+        Dirt.png
+        Grass.png
+        Heightmap.png
+        Heightmap2.png
+        Rock.png
+        WaterDUDV.png
+        WaterNormal.png
     shaders/
         Terrain.frag.glsl
         Terrain.vert.glsl
@@ -239,6 +251,9 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import (
     AmbientLight,
     DirectionalLight,
+    GeoMipTerrain,
+    load_prc_file,
+    Material,
     Shader,
     Vec4
 )
@@ -254,34 +269,23 @@ self.terrain_shader = Shader.load(
 )
 ```
 
-And add the following code where you load your terrain:
+And add the following code where you set the material for your terrain:
 ```python
-self.terrain.set_shader(self.terrain_shader)
+self.terrain.get_root().set_shader(self.terrain_shader)
 ```
 
-If you run your code at this point, you will see solid grey terrain because we haven't yet loaded any textures for our terrain. For this tutorial series, we will be using some simple terrain textures I made. Download the zip file from the following URL:
-https://github.com/Cybermals/panda3d-shader-tutorials/raw/refs/heads/main/legacy/terrain/images.zip
+We also need to enable sRGB mode for our framebuffer. Create `settings.prc` with the following content:
+```
+framebuffer-srgb 1
+```
 
-Now extract the zip file so your folder structure looks like this:
+Then add the following code above where you call the base constructor in `__init__`:
+```python
+# Load config file
+load_prc_file("settings.prc")
 ```
-project/
-    images/
-        Blank.png
-        ColorMask.png
-        Dirt.png
-        Grass.png
-        Heightmap.png
-        Heightmap2.png
-        Rock.png
-        WaterDUDV.png
-        WaterNormal.png
-    meshes/
-        Terrain.gltf
-    shaders/
-        Terrain.frag.glsl
-        Terrain.vert.glsl
-    main.py
-```
+
+If you run your code at this point, you will see solid gray terrain because we haven't yet loaded any textures for our terrain. For this tutorial series, we will be using some simple terrain textures I made. They are included in the zip file you previously downloaded.
 
 Let's start by just loading the grass texture. Modify your imports like this:
 ```python
@@ -289,6 +293,9 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import (
     AmbientLight,
     DirectionalLight,
+    GeoMipTerrain,
+    load_prc_file,
+    Material,
     SamplerState,
     Shader,
     TextureStage,
@@ -307,17 +314,9 @@ self.grass_tex.magfilter = SamplerState.FT_linear_mipmap_linear
 This will load the grass texture and turn on the linear mipmap filter for this texture. Now we can set this texture on our terrain by adding the following code after where we set the shader for our terrain:
 ```python
 stage0 = TextureStage("Grass")
-stage0.set_texcoord_name("0")
 
-self.terrain.set_texture(stage0, self.grass_tex)
+self.terrain.get_root().set_texture(stage0, self.grass_tex)
 ```
-
-The name of the texture coordinate may vary depending on the exporter used to create the mesh. If in doubt you can print out the names of the texture coordinates by temporarily adding the following line:
-```python
-print(self.terrain.find_all_texcoords())
-```
-
-Texture coordinate names are prefixed with "texcoord.". So you need to read only the part after the prefix.
 
 If you run your code at this point, you will see a texture on the terrain like this:  
 ![basic texture](https://github.com/Cybermals/panda3d-shader-tutorials/blob/main/pbr/terrain/02-texture_splatting/screenshots/01-basic_texture.png?raw=true)
@@ -339,6 +338,9 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import (
     AmbientLight,
     DirectionalLight,
+    GeoMipTerrain,
+    load_prc_file,
+    Material,
     SamplerState,
     Shader,
     TextureStage,
@@ -349,7 +351,7 @@ from panda3d.core import (
 
 Then add this code below where you set the shader for the terrain:
 ```python
-self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
+self.terrain.get_root().set_shader_input("texScale0", Vec2(.1, .1))
 ```
 
 If you run your code at this point, you will see that the resolution of the texture on the terrain has improved:  
@@ -378,15 +380,14 @@ self.blank_tex.magfilter = SamplerState.FT_linear_mipmap_linear
 We have a total of 4 textures loaded now, but how can we use them all on our terrain? If we call `set_texture` repeatedly, we will just be changing the first texture used on the terrain. However, it is possible to assign multiple textures at once by assigning each texture to a different texture stage. We can create a texture stage for each additional texture we want to use and assign a different texture to each:
 ```python
 stage0 = TextureStage("Grass")
-stage0.set_texcoord_name("0")
 stage1 = TextureStage("Dirt")
 stage2 = TextureStage("Rock")
 stage3 = TextureStage("Blank")
 
-self.terrain.set_texture(stage0, self.grass_tex)
-self.terrain.set_texture(stage1, self.dirt_tex)
-self.terrain.set_texture(stage2, self.rock_tex)
-self.terrain.set_texture(stage3, self.blank_tex)
+self.terrain.get_root().set_texture(stage0, self.grass_tex)
+self.terrain.get_root().set_texture(stage1, self.dirt_tex)
+self.terrain.get_root().set_texture(stage2, self.rock_tex)
+self.terrain.get_root().set_texture(stage3, self.blank_tex)
 ```
 
 We will also need to add more uniforms to our fragment shader that will receive the additional textures:
@@ -407,11 +408,11 @@ uniform vec2 texScale3;
 
 The new scale uniforms will need to be populated like our first one:
 ```python
-self.terrain.set_shader(self.terrain_shader)
-self.terrain.set_shader_input("texScale0", Vec2(.1, .1))
-self.terrain.set_shader_input("texScale1", Vec2(.1, .1))
-self.terrain.set_shader_input("texScale2", Vec2(.1, .1))
-self.terrain.set_shader_input("texScale3", Vec2(.1, .1))
+self.terrain.get_root().set_shader(self.terrain_shader)
+self.terrain.get_root().set_shader_input("texScale0", Vec2(.1, .1))
+self.terrain.get_root().set_shader_input("texScale1", Vec2(.1, .1))
+self.terrain.get_root().set_shader_input("texScale2", Vec2(.1, .1))
+self.terrain.get_root().set_shader_input("texScale3", Vec2(.1, .1))
 ```
 
 However, there is still something that is missing. We have not defined a way to determine which texture should be used for each part of the terrain. To do this, we will need to use an additional texture called a color mask. Let's start by loading it:
@@ -424,17 +425,16 @@ self.color_mask_tex.magfilter = SamplerState.FT_linear_mipmap_linear
 We also need to add an additional texture stage for it:
 ```python
 stage0 = TextureStage("Grass")
-stage0.set_texcoord_name("0")
 stage1 = TextureStage("Dirt")
 stage2 = TextureStage("Rock")
 stage3 = TextureStage("Blank")
 stage4 = TextureStage("ColorMask")
 
-self.terrain.set_texture(stage0, self.grass_tex)
-self.terrain.set_texture(stage1, self.dirt_tex)
-self.terrain.set_texture(stage2, self.rock_tex)
-self.terrain.set_texture(stage3, self.blank_tex)
-self.terrain.set_texture(stage4, self.color_mask_tex)
+self.terrain.get_root().set_texture(stage0, self.grass_tex)
+self.terrain.get_root().set_texture(stage1, self.dirt_tex)
+self.terrain.get_root().set_texture(stage2, self.rock_tex)
+self.terrain.get_root().set_texture(stage3, self.blank_tex)
+self.terrain.get_root().set_texture(stage4, self.color_mask_tex)
 ```
 
 And in our fragment shader, we will need to add another uniform for this texture:
