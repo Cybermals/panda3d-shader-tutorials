@@ -26,7 +26,15 @@ Then unpack the zip file so your project structure looks like:
 ```
 project/
     images/
+        Blank.png
+        ColorMask.png
+        Dirt.png
+        Grass.png
         Heightmap.png
+        Heightmap2.png
+        Rock.png
+        WaterDUDV.png
+        WaterNormal.png
     main.py
 ```
 
